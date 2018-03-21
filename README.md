@@ -3,6 +3,6 @@ projet web L&lt;3
 
 # Comment démarrer
 clone ce repository
-cd leagueofstones
-npm install
-npm start
+<br/>cd leagueofstones
+<br/>npm install
+<br/>npm start
