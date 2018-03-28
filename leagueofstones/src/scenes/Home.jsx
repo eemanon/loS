@@ -18,6 +18,7 @@ const styles = {
 	container: {
 		backgroundRepeat: 'no-repeat',
 		backgroundAttachment: 'fixed',
+		padding: '8px',
 	},
 	lien: {
     	textDecoration: 'none',
@@ -26,7 +27,10 @@ const styles = {
 	root: {
 		flexGrow: 1,
 		marginTop: 30,
-    }
+    },
+	card: {
+
+	}
 };
 
 class Home extends React.Component {
@@ -51,8 +55,13 @@ class Home extends React.Component {
 	render() {
 		const { classes } = this.props;
 		return (
-			<Grid container spacing={24} alignItems="stretch">
-				<Grid item xs={12}>
+			<Grid container spacing={24} alignItems="stretch" style={styles.container}>
+				<Grid item xs={12} sm={6}>
+					<Card  style={styles.card}>
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+					</Card>
+				</Grid>
+				<Grid item xs={12} sm={6}>
 					<Card>
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
 					</Card>

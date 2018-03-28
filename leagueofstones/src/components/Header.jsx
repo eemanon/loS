@@ -23,18 +23,21 @@ import {withRouter} from 'react-router';
 var path = require('../backendPath.js').backendpath
 var imagepath = require('../backendPath.js').imagepath
 
+
 const styles = {
   appbar: {
-  	backgroundColor: '#3A9D23',
+  	backgroundColor: '#565656',
   	position: 'fixed',
   },
   img: {
   	height: '50px',
+	 position: 'fixed',
+     left: '50%',
+     transform: 'translate(-50%, -50%)',
   },
   lien: {
   	marginLeft: 'auto',
   	marginRight: 'auto',
-    textDecoration: 'none',
   },
 };
 
@@ -130,67 +133,11 @@ class Header extends React.Component {
   render() {
     const { classes } = this.props;
 
-    const drawer = (
-      <Drawer open={this.state.left} onClose={this.toggleDrawer('left', false)}>
-          <div
-            tabIndex={0}
-            role="button"
-            onClick={this.toggleDrawer('left', false)}
-            onKeyDown={this.toggleDrawer('left', false)}
-          >
-          <div className={classes.list}>
-              <List>
-                <Link to="/events" style={styles.lien}>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <EventIcon />
-                    </ListItemIcon>
-                    <ListItemText inset primary="Événements" />
-                  </ListItem>
-                </Link>
-
-                <Link to="/profil" style={styles.lien}>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <LibraryBooksIcon />
-                    </ListItemIcon>
-                    <ListItemText inset primary="Profil" />
-                  </ListItem>
-                </Link>
-
-                <Link to="/search_garden" style={styles.lien}>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <Search />
-                    </ListItemIcon>
-                    <ListItemText inset primary="Chercher Jardin" />
-                  </ListItem>
-                </Link>
-                <Link to="/accueilUser" style={styles.lien}>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <EventIcon />
-                    </ListItemIcon>
-                    <ListItemText inset primary="Accueil" />
-                  </ListItem>
-                </Link> 
-              </List>
-            </div>
-          </div>
-        </Drawer>
-    );
-
     return (
       <AppBar position="static" style = {styles.appbar}>
         <Toolbar>
-          <IconButton
-              color="contrast"
-              aria-label="open drawer"
-              onClick={this.toggleDrawer('left', true)}>
-              <MenuIcon />
-          </IconButton>	
 		  
-          <Link to="/" style={styles.lien}><img src={imagepath+'/images/logo.png'} style={styles.img}/></Link>
+          <Link to="/" style={styles.lien}><img src={process.env.PUBLIC_URL+'/images/logo.png'} style={styles.img}/></Link>
 			{this.state.connected?(this.state.photoLink==''?(<MenuAccount logout={this.tryLogout.bind(this)}><FaceIcon /></MenuAccount>):(<MenuAccount logout={this.tryLogout.bind(this)}><Avatar src={imagepath+this.state.photoLink} /></MenuAccount>)):( 
 			  <Button
 								component={Link}
@@ -201,7 +148,6 @@ class Header extends React.Component {
 			</Button>)}
 			
         </Toolbar>
-        {drawer}
       </AppBar>
     );
   }
