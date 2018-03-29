@@ -16,12 +16,18 @@ import Badge from 'material-ui/Badge';
 import FaceIcon from 'material-ui-icons/Face';
 import Avatar from 'material-ui/Avatar';
 import MenuAccount from './menus/MenuAccount.jsx';
-
+import TextField from 'material-ui/TextField';
 import { connect } from 'react-redux';
 import {withRouter} from 'react-router';
 
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from 'material-ui/Dialog';
+
 var path = require('../backendPath.js').backendpath
-var imagepath = require('../backendPath.js').imagepath
 
 
 const styles = {
@@ -43,65 +49,53 @@ const styles = {
 
 class Header extends React.Component {
 	state = {
-		left: false,			//drawer visible
 		connected: false,		//user connected
-		numRequestGarden: 0,	//users requests on gardens from other users
-		numMessages: 0,			//system messages 
-		photoLink: '',			//profile image
-		accountType: 'user',	//profile type
-		user: ''
+		user: '',
+		email: '',
+		openDialog: false,
+		password: ''
 	};
 	
   constructor(props) {
       super(props);
   }
   componentDidMount(){
-	  if(!this.props.connected){
-	  this.checkLogin();		  
-	  }
-
   }
   componentDidUpdate(){	  
-	  if(this.props.connected!=this.state.connected){
-		console.log("component did update, props.connected: "+this.props.connected+" this.state.connected: "+this.state.connected);
-		this.checkLogin();	
-		console.log(this.props);		
-	  }
-
+	console.log("update!")
+	if(this.props.connected && !this.state.connected){
+		console.log("omg it's connected!")
+		this.setState({connected: true});
+		this.setState({user: this.props.user});
+		this.setState({email: this.props.email});
+	}
   }
+  openDialogdeleteAccount = () => {
+	  console.log("dialog!")
+	this.setState({ openDialog: true });
+  }
+  handleChange = prop => event => {
+    this.setState({ [prop]: event.target.value });
+  };
   
-  getProfilePhoto(email){
-	fetch(path+'/getPhoto.php?email='+email, {credentials: 'include', method: 'get', accept: 'application/json'})
+  deleteAccount = () => {
+	  console.log("deleting your account...")
+	  let url = path+'/users/unsubscribe?email='+this.props.email+'&password='+this.state.password;
+	  console.log(url);
+	  fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
 		.then(function(resp){return resp.json()})
 		.then(function(data) {
-			if(data.info!="notconnected"){
-				console.log("setting photo");
-				this.setState({photoLink: data.photo});
-				this.props.dispatch({ type: 'SETPHOTO', value: data.photo});
-			}
-	}.bind(this))
-	.catch(function(error) {
-		alert(error);
-	}); 
-  }
-  
-  checkLogin(){
-	console.log("check login...");
-	fetch(path+'/getInfoConnected.php', {credentials: 'include', method: 'get', accept: 'application/json'})
-		.then(function(resp){return resp.json()})
-		.then(function(data) {
-			if(data.Reponse!="Veillez vous connecte"){
-				console.log(data.info[0]);
-				this.setState({connected: true})
-				this.props.dispatch({ type: 'CONNECT' });
-				this.props.dispatch({ type: 'SETPHOTO', value: data.info[0].photo});
-				this.props.dispatch({ type: 'SETDESCRIPTION', value: data.info[0].description});
-				this.props.dispatch({ type: 'SETNOM', value: data.info[0].nom});
-				this.props.dispatch({ type: 'SETPRENOM', value: data.info[0].prenom});
-				this.setState({photoLink: data.info[0].photo});
-				console.log(this.props);
+			console.log(data);
+			if(data.status==="ok"){
+				console.log("positive response...");
+				this.props.dispatch({ type: 'DISCONNECT' });
+				this.props.history.push('/');   
+				this.handleRequestCloseDialog();
+				this.setState({connected: false});
+				alert("Ton compte a été supprimé. Adieu! :'(")
 			} else {
-				console.log("NOT CONNECTED");
+				alert ("action failed. "+data.message);
+				this.handleRequestCloseDialog();
 			}
 	}.bind(this))
 	.catch(function(error) {
@@ -111,34 +105,63 @@ class Header extends React.Component {
   
   tryLogout(){
 	console.log("logging out...");
-	fetch(path+'/Deconnexion.php', {credentials: 'include', method: 'get', accept: 'application/json'})
+	let url = path+'/users/disconnect';
+	fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
 		.then(function(resp){return resp.json()})
 		.then(function(data) {
-			if(data.Reponse=="Connexion inexistante" || data.Reponse=="Déconnexion Effectuer"){
-				this.setState({connected: false})
+			console.log(data);
+			if(data.status==="ok"){
+				console.log("positive response...");
 				this.props.dispatch({ type: 'DISCONNECT' });
 				this.props.history.push('/');   
+				this.setState({connected: false})
 			}
 	}.bind(this))
 	.catch(function(error) {
 		console.log(error);
 	}); 
   }
-  toggleDrawer = (side, open) => () => {
-    this.setState({
-      [side]: open,
-    });
+  handleRequestCloseDialog = () => {
+    this.setState({ openDialog: false });
   };
-
+  
   render() {
     const { classes } = this.props;
-
+	const deleteAccountDialog = (
+      <Dialog open={this.state.openDialog} onClose={this.handleRequestCloseDialog}>
+          <DialogTitle>Supprimer mon compte</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              t'es sur de cette action? Tu ne pourras plus jouer aux cailloux!
+            </DialogContentText>
+				  <TextField
+                autoFocus
+                margin="dense"
+                id="password"
+                label="Confirme cette action avec ton mot de passe"
+                type="password"
+                name="password"
+                onChange={this.handleChange('password')}
+                value={this.state.password}
+                fullWidth
+                required />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleRequestCloseDialog} color="primary">
+              Annuler
+            </Button>
+            <Button onClick={this.deleteAccount} color="primary">
+              Oui, Supprimer mon Compte
+            </Button>
+          </DialogActions>
+        </Dialog>
+    )
     return (
       <AppBar position="static" style = {styles.appbar}>
         <Toolbar>
 		  
           <Link to="/" style={styles.lien}><img src={process.env.PUBLIC_URL+'/images/logo.png'} style={styles.img}/></Link>
-			{this.state.connected?(this.state.photoLink==''?(<MenuAccount logout={this.tryLogout.bind(this)}><FaceIcon /></MenuAccount>):(<MenuAccount logout={this.tryLogout.bind(this)}><Avatar src={imagepath+this.state.photoLink} /></MenuAccount>)):( 
+			{this.state.connected?(<MenuAccount logout={this.tryLogout.bind(this)} deleteAccount={this.openDialogdeleteAccount.bind(this)}><FaceIcon /></MenuAccount>):( 
 			  <Button
 								component={Link}
 				  color="contrast"
@@ -148,6 +171,7 @@ class Header extends React.Component {
 			</Button>)}
 			
         </Toolbar>
+		{deleteAccountDialog}
       </AppBar>
     );
   }
@@ -157,7 +181,7 @@ function mapStateToProps(state) {
   return {
     user: state.user,
 	connected: state.connected,
-	photo: state.photoLink,
+	email: state.email
   };
 }
 

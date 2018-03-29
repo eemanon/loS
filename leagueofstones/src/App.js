@@ -10,11 +10,15 @@ import {
   Link
 } from 'react-router-dom';
 
-
-
+import SignInScreen from "./scenes/SignIn";
+import SignUpScreen from "./scenes/SignUp";
+import Lobby from "./scenes/Lobby";
 const initialState = {
   connected: false,
-  user: ''
+  user: '',
+  token: '',
+  email: '',
+  useractive: false,
 };
 
 function reducer(state = initialState, action) {
@@ -31,11 +35,28 @@ function reducer(state = initialState, action) {
       return Object.assign({}, state, {
         user: action.value
       });
+	case 'SETTOKEN':
+      return Object.assign({}, state, {
+        token: action.value
+      });
+	case 'SETEMAIL':
+      return Object.assign({}, state, {
+        email: action.value
+      });
+	case 'SETUSERACTIVE':
+      return Object.assign({}, state, {
+        useractive: true
+      });
+	case 'SETUSERINACTIVE':
+      return Object.assign({}, state, {
+        useractive: false
+      });
     default:
       return state;
   }
 }
 const store = createStore(reducer);
+const baseUrl = process.env.PUBLIC_URL;
 
 const styles = {
   container: {
@@ -56,7 +77,10 @@ class App extends Component {
 	    <div>
 		<Header />
 		<div style={styles.main}> 
-		  <Home buttontext="clique-moi" />
+		  <Route exact path={baseUrl +'/'} component={Home}/>
+		  <Route  path='/signin' component={SignInScreen}/>
+		  <Route  path='/signup' component={SignUpScreen}/>
+		  <Route  path='/accueilUser' component={Lobby}/>
 		</div>
 		</div>
       </Router>

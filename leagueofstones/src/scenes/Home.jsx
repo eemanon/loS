@@ -29,7 +29,7 @@ const styles = {
 		marginTop: 30,
     },
 	card: {
-
+	
 	}
 };
 

@@ -9,18 +9,14 @@ import { withStyles } from 'material-ui/styles';
 import { Manager, Target, Popper } from 'react-popper';
 import ClickAwayListener from 'material-ui/utils/ClickAwayListener';
 import {withRouter} from 'react-router';
-
-import DashboardIcon from 'material-ui-icons/Dashboard';
-import InboxIcon from 'material-ui-icons/MoveToInbox';
-import DraftsIcon from 'material-ui-icons/Drafts';
-import SendIcon from 'material-ui-icons/Send';
-import RoomIcon from 'material-ui-icons/Room';
-import SearchIcon from 'material-ui-icons/Search';
+import { connect } from 'react-redux';
 import { ListItemIcon, ListItemText } from 'material-ui/List';
-import EventIcon from 'material-ui-icons/Event';
-import AccountBoxIcon from 'material-ui-icons/AccountBox';
 import HighlightOffIcon from 'material-ui-icons/HighlightOff';
-import MailOutlineIcon from 'material-ui-icons/MailOutline';
+import DeleteForeverIcon from 'material-ui-icons/DeleteForever';
+import Checkbox from 'material-ui/Checkbox';
+
+
+var path = require('../../backendPath.js').backendpath
 
 const styles = {
   root: {
@@ -37,6 +33,7 @@ const styles = {
 class MenuListComposition extends React.Component {
   state = {
     open: false,
+	useractive: false
   };
 
   handleClick = () => {
@@ -50,7 +47,33 @@ class MenuListComposition extends React.Component {
 	this.props.history.push('/'+link);
 	this.handleClose();
   }
-
+  handleToggle = () => {
+	  if(this.state.useractive){
+		;//on sait pas si cette fonction est implementé coté serveur xD
+		//this.setState({useractive:false});
+		//this.props.dispatch({ type: 'SETUSERINACTIVE' });
+	  } else {
+		console.log("adding you to the list of players...")
+		let url = path+'/matchmaking/participate';
+		console.log(url);
+		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
+			.then(function(resp){return resp.json()})
+			.then(function(data) {
+				console.log(data);
+				if(data.status==="ok"){
+					console.log("positive response...");
+					this.setState({useractive:true});  
+					this.props.dispatch({ type: 'SETUSERACTIVE' });
+				} else {
+					alert ("action failed. "+data.message);
+					this.handleRequestCloseDialog();
+				}
+		}.bind(this))
+		.catch(function(error) {
+			console.log(error);
+		}); 
+	  }
+  }
   render() {
     const { classes } = this.props;
     const { open } = this.state;
@@ -76,41 +99,24 @@ class MenuListComposition extends React.Component {
               <Grow in={open} id="menu-list" style={{ transformOrigin: '0 0 0' }}>
                 <Paper>
                   <MenuList role="menu">
-                    <MenuItem onClick={() => this.goTo("nonAlaFusion")}> 
-						<ListItemIcon className={classes.icon}>
-							<RoomIcon />
-						</ListItemIcon>
-						<ListItemText className={classes.listText} primary="Ajouter Jardin" />
-					</MenuItem>
-                    <MenuItem onClick={() => this.goTo("search_garden")}><ListItemIcon className={classes.icon}>
-						<SearchIcon />
+					<MenuItem onClick={this.handleToggle}><ListItemIcon className={classes.icon}>
+						<Checkbox
+							checked={this.state.useractive}
+							tabIndex={-1}
+							disableRipple
+						  />
 					  </ListItemIcon>
-					  <ListItemText className={classes.listText} primary="Recherche Jardin" />
+					  <ListItemText className={classes.listText} primary="Je cherche un match!" />
 					</MenuItem>
-                    <MenuItem onClick={() => this.goTo("my_gardens")}><ListItemIcon className={classes.icon}>
-						<DashboardIcon />
+					<MenuItem onClick={this.props.deleteAccount}><ListItemIcon className={classes.icon}>
+						<DeleteForeverIcon />
 					  </ListItemIcon>
-					  <ListItemText className={classes.listText} primary="Mes Jardins" />
+					  <ListItemText className={classes.listText} primary="Supprimer Compte" />
 					</MenuItem>
-					<MenuItem onClick={() => this.goTo("search_garden")}><ListItemIcon className={classes.icon}>
-						<EventIcon />
-					  </ListItemIcon>
-					  <ListItemText className={classes.listText} primary="Ajouter Evénement" />
-					</MenuItem>
-					<MenuItem onClick={() => this.goTo("profil")}><ListItemIcon className={classes.icon}>
-						<AccountBoxIcon />
-					  </ListItemIcon>
-					  <ListItemText className={classes.listText} primary="Mon Profil" />
-					</MenuItem>
-					<MenuItem onClick={() => this.goTo("messagerie")}><ListItemIcon className={classes.icon}>
-						<MailOutlineIcon />
-					  </ListItemIcon>
-					  <ListItemText className={classes.listText} primary="Demandes Jardin" />
-					</MenuItem>
-					<MenuItem onClick={this.handleClose}><ListItemIcon className={classes.icon}>
+					<MenuItem onClick={this.props.logout}><ListItemIcon className={classes.icon}>
 						<HighlightOffIcon />
 					  </ListItemIcon>
-					  <ListItemText className={classes.listText} primary="Logout" onClick={this.props.logout}/>
+					  <ListItemText className={classes.listText} primary="Logout" />
 					</MenuItem>
                   </MenuList>
                 </Paper>
@@ -127,4 +133,11 @@ MenuListComposition.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRouter(withStyles(styles)(MenuListComposition));
+function mapStateToProps(state) {
+  return {
+		useractive : state.useractive
+  };
+}
+
+
+export default withRouter(withStyles(styles)(connect(mapStateToProps)(MenuListComposition)));
