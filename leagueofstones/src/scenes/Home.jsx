@@ -12,7 +12,7 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import { connect } from 'react-redux';
 
-import Card, { CardActions, CardContent } from 'material-ui/Card';
+import Card, { CardActions, CardContent, CardMedia } from 'material-ui/Card';
 
 const styles = {
 	container: {
@@ -30,7 +30,10 @@ const styles = {
     },
 	card: {
 	
-	}
+	},
+	media: {
+		height: '30vh',
+    }
 };
 
 class Home extends React.Component {
@@ -58,23 +61,50 @@ class Home extends React.Component {
 			<Grid container spacing={24} alignItems="stretch" style={styles.container}>
 				<Grid item xs={12} sm={6}>
 					<Card  style={styles.card}>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+					<CardMedia
+						image={process.env.PUBLIC_URL+"/images/moelen.jpg"}
+						title="Présentation"
+						style={styles.media}
+					  />
+					  <CardContent>
+						Little Caillou just one our stony contest! Read more on stonesforstone.rs!
+
+						</CardContent>
 					</Card>
 				</Grid>
 				<Grid item xs={12} sm={6}>
 					<Card>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+					<CardMedia
+						image={process.env.PUBLIC_URL+"/images/7360.jpg"}
+						title="Présentation"
+						style={styles.media}
+					  /><CardContent>
+						A community of many many stoner awaits YOU! Can YOU become the next ROCK? Or are you not solid enough!?  Prove yourself in this rocky adventure!
+
+						</CardContent>
 					</Card>
 				</Grid>
 				<Grid item xs={12} sm={6}>
 					<Card>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+					<CardMedia
+						image={process.env.PUBLIC_URL+"/images/cropped_1-stone-wall-iStock.jpg"}
+						title="Présentation"
+						style={styles.media}
+					  /><CardContent>
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+						</CardContent>
 					</Card>
 				</Grid>
 				<Grid item xs={12} sm={6}>
 					<Card>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-						<Button onClick={this.handleClickOpen}>{this.props.buttontext}</Button>
+										<CardMedia
+						image={process.env.PUBLIC_URL+"/images/logo.png"}
+						title="logo"
+						style={styles.media}
+					  /><CardContent>
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
+						</CardContent>
+						<Button onClick={this.handleClickOpen}>Click me</Button>
 						<Dialog
 						  open={this.state.open}
 						  onClose={this.handleClose}

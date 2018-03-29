@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import Home from './scenes/Home'
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import {
@@ -82,6 +83,7 @@ class App extends Component {
 		  <Route  path='/signup' component={SignUpScreen}/>
 		  <Route  path='/accueilUser' component={Lobby}/>
 		</div>
+		<Footer />
 		</div>
       </Router>
 	</Provider>
