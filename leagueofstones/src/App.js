@@ -33,7 +33,7 @@ function reducer(state = initialState, action) {
         connected: false
       });
 	case 'SETUSER':
-      return Object.assign({}, state, {
+      return Object.assign({}, state, {	
         user: action.value
       });
 	case 'SETTOKEN':
@@ -79,9 +79,10 @@ class App extends Component {
 		<Header />
 		<div style={styles.main}> 
 		  <Route exact path={baseUrl +'/'} component={Home}/>
-		  <Route  path='/signin' component={SignInScreen}/>
-		  <Route  path='/signup' component={SignUpScreen}/>
-		  <Route  path='/accueilUser' component={Lobby}/>
+		  <Route  path={baseUrl +'/signin'} component={SignInScreen}/>
+		  <Route  path={baseUrl+'/signup'} component={SignUpScreen}/>
+		  <Route  path={baseUrl+'/accueilUser'} component={Lobby}/>
+		  <Route  path={baseUrl+'/composerDeck'} component={Home}/>
 		</div>
 		<Footer />
 		</div>

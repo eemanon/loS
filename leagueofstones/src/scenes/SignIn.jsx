@@ -100,11 +100,11 @@ class SignIn extends React.Component{
 				.then(function(data) {
 				if (data.status==="ok"){
 					this.props.dispatch({ type: 'CONNECT' });
-					this.props.dispatch({ type: 'SETUSER', value: data.name});
-					this.props.dispatch({ type: 'SETTOKEN', value: data.token});
+					this.props.dispatch({ type: 'SETUSER', value: data.data.name});
+					this.props.dispatch({ type: 'SETTOKEN', value: data.data.token});
 					this.props.dispatch({ type: 'SETEMAIL', value: this.state.email});
 					this.props.history.push('/accueilUser'); 
-					console.log(data);
+					console.log(this.props);
 				} else if(data.message=="Already connected"){
 					fetch(path+'/users/disconnect?email='+this.state.email+'&password='+this.state.password, {
 					  method: 'GET',
