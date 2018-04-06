@@ -165,7 +165,7 @@ class Header extends React.Component {
 			  <Button
 								component={Link}
 				  color="contrast"
-				  to="/signin"
+			to={process.env.PUBLIC_URL+"/signin"}
 							  >
 								{'Connexion'}
 			</Button>)}
