@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
+import DeckCreation from "./scenes/DeckCreation"
 import {
   BrowserRouter as Router,
   Route,
@@ -14,7 +15,6 @@ import {
 import SignInScreen from "./scenes/SignIn";
 import SignUpScreen from "./scenes/SignUp";
 import Lobby from "./scenes/Lobby";
-import ComposerDeck from "./scenes/ComposerDeck";
 const initialState = {
   connected: false,
   user: '',
@@ -25,31 +25,31 @@ const initialState = {
 
 function reducer(state = initialState, action) {
   switch(action.type) {
-	case 'CONNECT':
+  case 'CONNECT':
       return Object.assign({}, state, {
         connected: true
       });
-	case 'DISCONNECT':
+  case 'DISCONNECT':
       return Object.assign({}, state, {
         connected: false
       });
-	case 'SETUSER':
-      return Object.assign({}, state, {
+  case 'SETUSER':
+      return Object.assign({}, state, { 
         user: action.value
       });
-	case 'SETTOKEN':
+  case 'SETTOKEN':
       return Object.assign({}, state, {
         token: action.value
       });
-	case 'SETEMAIL':
+  case 'SETEMAIL':
       return Object.assign({}, state, {
         email: action.value
       });
-	case 'SETUSERACTIVE':
+  case 'SETUSERACTIVE':
       return Object.assign({}, state, {
         useractive: true
       });
-	case 'SETUSERINACTIVE':
+  case 'SETUSERINACTIVE':
       return Object.assign({}, state, {
         useractive: false
       });
@@ -63,7 +63,7 @@ const baseUrl = process.env.PUBLIC_URL;
 const styles = {
   container: {
     textAlign: 'center',
-  	backgroundColor: '#F5F5F5',
+    backgroundColor: '#F5F5F5',
   },
 
   main: {
@@ -74,21 +74,21 @@ const styles = {
 class App extends Component {
   render() {
     return (
-	<Provider store={store}>
+  <Provider store={store}>
       <Router>
-	    <div>
-		<Header />
-		<div style={styles.main}> 
-		  <Route exact path={baseUrl +'/'} component={Home}/>
-		  <Route  path='/signin' component={SignInScreen}/>
-		  <Route  path='/signup' component={SignUpScreen}/>
-		  <Route  path='/accueilUser' component={Lobby}/>
-      <Route  path='/composerDeck' component={ComposerDeck}/>
-		</div>
-		<Footer />
-		</div>
+      <div>
+    <Header />
+    <div style={styles.main}> 
+      <Route exact path={baseUrl +'/'} component={Home}/>
+      <Route  path={baseUrl +'/signin'} component={SignInScreen}/>
+      <Route  path={baseUrl+'/signup'} component={SignUpScreen}/>
+      <Route  path={baseUrl+'/accueilUser'} component={Lobby}/>
+      <Route  path={baseUrl+'/composerDeck'} component={DeckCreation}/>
+    </div>
+    <Footer />
+    </div>
       </Router>
-	</Provider>
+  </Provider>
     );
   }
 }
