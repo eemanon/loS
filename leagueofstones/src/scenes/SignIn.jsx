@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 
-var path = require('../backendPath.js').backendpath
+
 
 const primary = green[500];
 const accent = red['A200'];
@@ -104,7 +104,6 @@ class SignIn extends React.Component{
 					this.props.dispatch({ type: 'SETTOKEN', value: data.data.token});
 					this.props.dispatch({ type: 'SETEMAIL', value: this.state.email});
 					this.props.history.push('/accueilUser'); 
-					console.log(this.props);
 				} else if(data.message=="Already connected"){
 					fetch(path+'/users/disconnect?email='+this.state.email+'&password='+this.state.password, {
 					  method: 'GET',

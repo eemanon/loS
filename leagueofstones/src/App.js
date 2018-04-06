@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
+import DeckCreation from "./scenes/DeckCreation"
 import {
   BrowserRouter as Router,
   Route,
@@ -82,7 +83,7 @@ class App extends Component {
 		  <Route  path={baseUrl +'/signin'} component={SignInScreen}/>
 		  <Route  path={baseUrl+'/signup'} component={SignUpScreen}/>
 		  <Route  path={baseUrl+'/accueilUser'} component={Lobby}/>
-		  <Route  path={baseUrl+'/composerDeck'} component={Home}/>
+		  <Route  path={baseUrl+'/composerDeck'} component={DeckCreation}/>
 		</div>
 		<Footer />
 		</div>
