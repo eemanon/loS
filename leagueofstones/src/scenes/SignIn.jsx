@@ -16,7 +16,7 @@ import { CircularProgress } from 'material-ui/Progress';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-
+var path = require('../backendPath').backendpath
 
 
 const primary = green[500];
