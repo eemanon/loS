@@ -28,7 +28,8 @@ const styles = theme =>({
 });
 	
 class Footer extends React.Component {
-  state = {
+  state = 
+  {
     open: false,
   };
 
@@ -39,13 +40,20 @@ class Footer extends React.Component {
   handleClose = () => {
     this.setState({ open: false });
   };
-
+  
+   
+  handleClickRules = () => 
+  {
+    <a href="Rules.jsx" ></a>
+  }
+  
    render() {
 	   
     const { classes } = this.props;
       return (
 		<footer className={classes.footer}>
 			 <Button onClick={this.handleOpen}>Mentions Legales</Button>
+			 <Button onClick={this.handleClickRules}>Regles du Jeu</Button>
 			<Modal
 			  open={this.state.open}
 			  onClose={this.handleClose}
