@@ -14,6 +14,7 @@ import {
 import SignInScreen from "./scenes/SignIn";
 import SignUpScreen from "./scenes/SignUp";
 import Lobby from "./scenes/Lobby";
+import ComposerDeck from "./scenes/ComposerDeck";
 const initialState = {
   connected: false,
   user: '',
@@ -82,6 +83,7 @@ class App extends Component {
 		  <Route  path='/signin' component={SignInScreen}/>
 		  <Route  path='/signup' component={SignUpScreen}/>
 		  <Route  path='/accueilUser' component={Lobby}/>
+      <Route  path='/composerDeck' component={ComposerDeck}/>
 		</div>
 		<Footer />
 		</div>
