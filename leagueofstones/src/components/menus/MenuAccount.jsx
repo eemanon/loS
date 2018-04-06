@@ -33,7 +33,8 @@ const styles = {
 class MenuListComposition extends React.Component {
   state = {
     open: false,
-	useractive: false
+	useractive: false,
+	username: ''
   };
 
   handleClick = () => {
@@ -54,6 +55,7 @@ class MenuListComposition extends React.Component {
 		//this.props.dispatch({ type: 'SETUSERINACTIVE' });
 	  } else {
 		console.log("adding you to the list of players...")
+		console.log(this);
 		let url = path+'/matchmaking/participate';
 		console.log(url);
 		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
@@ -99,6 +101,9 @@ class MenuListComposition extends React.Component {
               <Grow in={open} id="menu-list" style={{ transformOrigin: '0 0 0' }}>
                 <Paper>
                   <MenuList role="menu">
+					<MenuItem onClick={this.props.deleteAccount}>
+						  <ListItemText className={classes.listText} primary={this.props.userConnected} />
+					</MenuItem>
 					<MenuItem onClick={this.handleToggle}><ListItemIcon className={classes.icon}>
 						<Checkbox
 							checked={this.state.useractive}
@@ -135,7 +140,8 @@ MenuListComposition.propTypes = {
 
 function mapStateToProps(state) {
   return {
-		useractive : state.useractive
+		useractive : state.useractive,
+		user : state.username,		
   };
 }
 

@@ -89,7 +89,7 @@ class Header extends React.Component {
 			if(data.status==="ok"){
 				console.log("positive response...");
 				this.props.dispatch({ type: 'DISCONNECT' });
-				this.props.history.push('/');   
+				this.props.history.push(process.env.PUBLIC_URL+'/');   
 				this.handleRequestCloseDialog();
 				this.setState({connected: false});
 				alert("Ton compte a été supprimé. Adieu! :'(")
@@ -113,7 +113,7 @@ class Header extends React.Component {
 			if(data.status==="ok"){
 				console.log("positive response...");
 				this.props.dispatch({ type: 'DISCONNECT' });
-				this.props.history.push('/');   
+				this.props.history.push(process.env.PUBLIC_URL+'/');   
 				this.setState({connected: false})
 			}
 	}.bind(this))
@@ -161,11 +161,11 @@ class Header extends React.Component {
         <Toolbar>
 		  
           <Link to="/" style={styles.lien}><img src={process.env.PUBLIC_URL+'/images/logo.png'} style={styles.img}/></Link>
-			{this.state.connected?(<MenuAccount logout={this.tryLogout.bind(this)} deleteAccount={this.openDialogdeleteAccount.bind(this)}><FaceIcon /></MenuAccount>):( 
+			{this.state.connected?(<MenuAccount userConnected = {this.props.user} logout={this.tryLogout.bind(this)} deleteAccount={this.openDialogdeleteAccount.bind(this)}><FaceIcon /></MenuAccount>):( 
 			  <Button
 								component={Link}
 				  color="contrast"
-				  to="/signin"
+			to={process.env.PUBLIC_URL+"/signin"}
 							  >
 								{'Connexion'}
 			</Button>)}
@@ -181,7 +181,7 @@ function mapStateToProps(state) {
   return {
     user: state.user,
 	connected: state.connected,
-	email: state.email
+	email: state.email,
   };
 }
 

@@ -108,7 +108,7 @@ class SignIn extends React.Component{
 					if(data.status==='ok'){
 						this.setCharging();
 						alert("Utilisateur créé. Tu peux desormais te connecter.")
-						this.props.history.push('/');  
+						this.props.history.push(process.env.PUBLIC_URL+'/');  
 					} else {
 						alert("ca n'a pas marché. "+data.message);
 						this.setCharging();
