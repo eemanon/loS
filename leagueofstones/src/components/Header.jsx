@@ -113,6 +113,8 @@ class Header extends React.Component {
 			if(data.status==="ok"){
 				console.log("positive response...");
 				this.props.dispatch({ type: 'DISCONNECT' });
+				this.props.dispatch({ type: 'SETUSERINACTIVE' });
+				console.log("setting user inactive"+this.props.useractive);
 				this.props.history.push(process.env.PUBLIC_URL+'/');   
 				this.setState({connected: false})
 			}

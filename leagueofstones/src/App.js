@@ -21,6 +21,7 @@ const initialState = {
   token: '',
   email: '',
   useractive: false,
+  waitforrequests: false
 };
 
 function reducer(state = initialState, action) {
@@ -53,6 +54,14 @@ function reducer(state = initialState, action) {
       return Object.assign({}, state, {
         useractive: false
       });
+	 case 'SETREQUESTWAITINACTIVE':
+      return Object.assign({}, state, {
+        waitforrequests: false
+      });
+	 case 'SETREQUESTWAITACTIVE':
+      return Object.assign({}, state, {
+        waitforrequests: true
+      });	  
     default:
       return state;
   }

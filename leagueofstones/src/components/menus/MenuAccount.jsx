@@ -34,7 +34,8 @@ class MenuListComposition extends React.Component {
   state = {
     open: false,
 	useractive: false,
-	username: ''
+	username: '',
+	waitforrequests: false
   };
 
   handleClick = () => {
@@ -66,6 +67,7 @@ class MenuListComposition extends React.Component {
 					console.log("positive response...");
 					this.setState({useractive:true});  
 					this.props.dispatch({ type: 'SETUSERACTIVE' });
+					this.props.dispatch({ type: 'SETREQUESTWAITACTIVE' });
 				} else {
 					alert ("action failed. "+data.message);
 					this.handleRequestCloseDialog();
@@ -142,6 +144,7 @@ function mapStateToProps(state) {
   return {
 		useractive : state.useractive,
 		user : state.username,		
+		waitforrequests: state.waitforrequests
   };
 }
 
