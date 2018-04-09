@@ -33,7 +33,12 @@ const styles = {
 	},
 	media: {
 		height: '30vh',
-    }
+    },
+	video:{
+		top: '10%',
+		position: 'fixed',
+		width: '100%',
+	}
 };
 
 class Home extends React.Component {
@@ -42,10 +47,12 @@ class Home extends React.Component {
   }
   state = {
     open: false,
+	video: false
   };
 
   handleClickOpen = () => {
     this.setState({ open: true });
+	this.setState({ video: true });
   };
 
   handleClose = () => {
@@ -54,11 +61,20 @@ class Home extends React.Component {
 	handleChange() {
 		console.log("test");
 	};
+  togglevid = () => {
+	  let vid = !this.state.video;
+	  this.setState({video: vid});
+  }
 	
 	render() {
+		const lilvid = (<video width="960" height="540" autoPlay style = {styles.video} onClick = {this.togglevid}>
+			  <source src={process.env.PUBLIC_URL+"/videos/victory.webm"}></source>
+			  Your browser does not support the video tag.
+			</video>);
 		const { classes } = this.props;
 		return (
 			<Grid container spacing={24} alignItems="stretch" style={styles.container}>
+				{this.state.video?lilvid:""}
 				<Grid item xs={12} sm={6}>
 					<Card  style={styles.card}>
 					<CardMedia
@@ -104,7 +120,7 @@ class Home extends React.Component {
 					  /><CardContent>
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
 						</CardContent>
-						<Button onClick={this.handleClickOpen}>Click me</Button>
+						<Button onClick={this.handleClickOpen}>Click me</Button><Button onClick={this.togglevid}>Check it out!</Button>
 						<Dialog
 						  open={this.state.open}
 						  onClose={this.handleClose}
