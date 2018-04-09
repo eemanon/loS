@@ -15,6 +15,7 @@ import {
 import SignInScreen from "./scenes/SignIn";
 import SignUpScreen from "./scenes/SignUp";
 import Lobby from "./scenes/Lobby";
+import Game from "./scenes/Game"
 const initialState = {
   connected: false,
   user: '',
@@ -93,6 +94,7 @@ class App extends Component {
       <Route  path={baseUrl+'/signup'} component={SignUpScreen}/>
       <Route  path={baseUrl+'/accueilUser'} component={Lobby}/>
       <Route  path={baseUrl+'/composerDeck'} component={DeckCreation}/>
+      <Route  path={baseUrl+'/game'} component={Game}/>
     </div>
     <Footer />
     </div>
