@@ -67,7 +67,8 @@ class DeckCreation extends React.Component {
     open: false,
 	connected: false,
 	cardsAvailable: [],
-	cardsInDeck: []
+	cardsInDeck: [],
+	deckStatus: 'nodeck'
   };
 
   handleClickOpen = () => {
@@ -108,6 +109,42 @@ class DeckCreation extends React.Component {
 			return {cardsInDeck: newDeck} // update state
     });
   } 
+  setupTimer = () => {
+	  	this.timerID = setInterval(
+		  () => this.tick(),
+		  2000
+		);
+  }
+  
+    tick() {
+	console.log("tick");
+	let url = path+'/match/getMatch'
+	console.log(url)
+	fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
+		.then(function(resp){return resp.json()})
+		.then(function(data) {
+			console.log(data);
+			if(data.status==="ok"){
+				console.log(data);
+				//if the match has begun, go to the game component
+				//and change state deckStatus for doing so.
+				if(data.data.status!=="Deck is pending")
+					this.setState({deckStatus: "opponentready"})
+			} else {
+				alert ("action failed. "+data.message);
+				this.handleRequestCloseDialog();
+			}
+	}.bind(this))
+	.catch(function(error) {
+		console.log(error);
+	}); 
+	clearInterval(this.timerID);
+	if(this.state.deckStatus==="decksubmitted")	{
+		this.setupTimer();
+	}
+	 else 
+		 this.props.history.push(process.env.PUBLIC_URL+'/game'); 
+	}
   
   addCard = card => () =>{
 	  console.log(card.id)
@@ -139,7 +176,11 @@ class DeckCreation extends React.Component {
 				console.log(data);
 				if(data.status==="ok"){
 					console.log("positive response...");
-					this.props.history.push(process.env.PUBLIC_URL+'/game'); 
+					
+					//now the question is: has the opponent chosen his/her deck as well?
+					//lets suppose that's not the case. Then we cant go to the game. We have to wait  and ask the server when the game's ready. all the time.
+					this.setState({deckStatus: "decksubmitted"})
+					this.tick()
 				} else {
 					alert ("action failed. "+data.message);
 					this.handleRequestCloseDialog();

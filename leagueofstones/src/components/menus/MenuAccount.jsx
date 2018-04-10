@@ -103,7 +103,7 @@ class MenuListComposition extends React.Component {
               <Grow in={open} id="menu-list" style={{ transformOrigin: '0 0 0' }}>
                 <Paper>
                   <MenuList role="menu">
-					<MenuItem onClick={this.props.deleteAccount}>
+					<MenuItem>
 						  <ListItemText className={classes.listText} primary={this.props.userConnected} />
 					</MenuItem>
 					<MenuItem onClick={this.handleToggle}><ListItemIcon className={classes.icon}>
