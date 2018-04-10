@@ -54,8 +54,8 @@ function MyCard(props){
 				<CardContent>
 					<Grid container spacing={24} style={styles.container}>
 						<Grid item xs={12}>{props.value.name}</Grid>
-						<Grid item xs style={styles.attack}>{props.value.info.attack}</Grid>
-						<Grid item xs style={styles.defense}>{props.value.info.defense}</Grid>
+						<Grid item xs style={styles.attack}>{props.value.stats.attackdamage}</Grid>
+						<Grid item xs style={styles.defense}>{props.value.stats.armor}</Grid>
 					</Grid>
 				</CardContent>
 			</Card>

@@ -139,6 +139,7 @@ class DeckCreation extends React.Component {
 				console.log(data);
 				if(data.status==="ok"){
 					console.log("positive response...");
+					this.props.history.push(process.env.PUBLIC_URL+'/game'); 
 				} else {
 					alert ("action failed. "+data.message);
 					this.handleRequestCloseDialog();
@@ -231,4 +232,4 @@ DeckCreation.propTypes = {
 	children: PropTypes.node,
 	classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(connect(mapStateToProps)(DeckCreation));
+export default withRouter(withStyles(styles)(connect(mapStateToProps)(DeckCreation)));

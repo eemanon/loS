@@ -33,10 +33,16 @@ class Game extends React.Component{
 		super(props);
 		this.state={
 			player: {
-				playerLifePoints: 150				
+				name: "",
+				playerLifePoints: 0,
+				cards: [],
+				deck: 0			
 			},
 			opponent: {
-				opponentLifePoints: 150
+				name: "",
+				opponentLifePoints: 0,
+				cards: 0,
+				deck: 0
 			}
 		}
 	}
@@ -47,11 +53,33 @@ class Game extends React.Component{
 		.then(function(resp){return resp.json()})
 		.then(function(data) {
 			console.log(data);
-			/*if(data.status==="ok"){
-				this.setState({cardlist:data.data});
+			if(data.status==="ok"){
+				console.log(this.props.user);
+				if(this.props.user===data.data.player1.name){
+					this.setState({player:{name: data.data.player1.name,
+										   playerLifePoints: data.data.player1.hp,
+										   cards: data.data.player1.hand,
+										   deck: data.data.player1.deck},
+									opponent:{name: data.data.player2.name,
+										   opponentLifePoints: data.data.player2.hp,
+										   cards: data.data.player2.hand,
+										   deck: data.data.player2.deck}
+								});
+				}else if(this.props.user===data.data.player2.name){
+					this.setState({player:{name: data.data.player2.name,
+										   playerLifePoints: data.data.player2.hp,
+										   cards: data.data.player2.hand,
+										   deck: data.data.player2.deck},
+									opponent:{name: data.data.player1.name,
+										   opponentLifePoints: data.data.player1.hp,
+										   cards: data.data.player1.hand,
+										   deck: data.data.player1.deck}	
+								});				
+				}
+				
 			} else {
 				alert ("action failed. "+data.message);
-			}*/
+			}
 		}.bind(this))
 		.catch(function(error) {
 			console.log(error);
@@ -72,4 +100,13 @@ class Game extends React.Component{
 
 }
 
-export default Game;
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+	connected: state.connected,
+	email: state.email,
+  };
+}
+
+
+export default connect(mapStateToProps)(Game) ;
