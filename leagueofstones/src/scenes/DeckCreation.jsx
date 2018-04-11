@@ -88,40 +88,46 @@ class DeckCreation extends React.Component {
     this.setState({ open: false });
   };
   componentDidMount(){
-	  
-	  //load all cards 
-	  let url = path+'/cards/getAll';
-		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-			.then(function(resp){return resp.json()})
-			.then(function(data) {
-				console.log(data);
-				if(data.status==="ok"){
-					console.log("positive response...");
-					this.setState({cardsAvailable:data.data});  
-					this.props.dispatch({ type: 'SETUSERACTIVE' });
-				} else {
-					alert ("action failed. "+data.message);
-					this.handleRequestCloseDialog();
-				}
-		}.bind(this))
-		.catch(function(error) {
-			console.log(error);
-		}); 
-	  //call /match/getMatch for whatever buggy reason...
-	  let url2 = path+'/match/getMatch';
-		fetch(url2, {credentials: 'include', method: 'get', accept: 'application/json'})
-			.then(function(resp){return resp.json()})
-			.then(function(data) {
-				console.log(data);
-				if(data.status==="ok"){
-					console.log("positive response...");
-				} else {
-					alert ("action failed. "+data.message);
-				}
-		}.bind(this))
-		.catch(function(error) {
-			console.log(error);
-		});
+	  //already deck submitted?
+	  if((localStorage.getItem('status')!=='deckcomposed')){
+		  console.log("not deck composed: "+localStorage.getItem('status'))
+
+		  //load all cards 
+		  let url = path+'/cards/getAll';
+			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
+				.then(function(resp){return resp.json()})
+				.then(function(data) {
+					console.log(data);
+					if(data.status==="ok"){
+						console.log("positive response...");
+						this.setState({cardsAvailable:data.data});  
+						this.props.dispatch({ type: 'SETUSERACTIVE' });
+					} else {
+						alert ("action failed. "+data.message);
+						this.handleRequestCloseDialog();
+					}
+			}.bind(this))
+			.catch(function(error) {
+				console.log(error);
+			}); 
+		  //call /match/getMatch for whatever reason...
+		  let url2 = path+'/match/getMatch';
+			fetch(url2, {credentials: 'include', method: 'get', accept: 'application/json'})
+				.then(function(resp){return resp.json()})
+				.then(function(data) {
+					console.log(data);
+					if(data.status==="ok"){
+						console.log("positive response...");
+					} else {
+						alert ("action failed. "+data.message);
+					}
+			}.bind(this))
+			.catch(function(error) {
+				console.log(error);
+			});
+		} else {
+			this.tick()
+		}
   }
    removeCard = card => () => {
 	  this.setState({
@@ -153,7 +159,7 @@ class DeckCreation extends React.Component {
 				//if the match has begun, go to the game component
 				//and change state deckStatus for doing so.
 				if(data.data.status!=="Deck is pending")
-					this.setState({deckStatus: "opponentready"})
+					this.setState({deckStatus: "opponentready"})				
 			} else {
 				alert ("action failed. "+data.message);
 				this.handleRequestCloseDialog();
@@ -167,6 +173,7 @@ class DeckCreation extends React.Component {
 		this.setupTimer();
 	}
 	 else 
+		 localStorage.setItem('status', 'game')
 		 this.props.history.push(process.env.PUBLIC_URL+'/game'); 
 	}
   
@@ -200,7 +207,7 @@ class DeckCreation extends React.Component {
 				console.log(data);
 				if(data.status==="ok"){
 					console.log("positive response...");
-					
+					localStorage.setItem('status', 'deckcomposed')
 					//now the question is: has the opponent chosen his/her deck as well?
 					//lets suppose that's not the case. Then we cant go to the game. We have to wait  and ask the server when the game's ready. all the time.
 					this.setState({deckStatus: "decksubmitted"})

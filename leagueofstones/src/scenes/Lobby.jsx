@@ -82,9 +82,10 @@ class Lobby extends React.Component {
 				this.setState({requestlist: data.data.request});
 				if(data.data.hasOwnProperty('match')){
 					//Demande accepté!
-				this.props.dispatch({ type: 'SETUSERINACTIVE' });	//arreter d'interroger le serveur avec participate and getall
-				//necessité de push la route de la composition du deck
-				this.props.history.push(process.env.PUBLIC_URL+'/composerDeck');
+					this.props.dispatch({ type: 'SETUSERINACTIVE' });	//arreter d'interroger le serveur avec participate and getall
+					//necessité de push la route de la composition du deck
+					localStorage.setItem('status','matched');
+					this.props.history.push(process.env.PUBLIC_URL+'/composerDeck');
 				}
 			} else {
 				alert ("action failed. "+data.message);

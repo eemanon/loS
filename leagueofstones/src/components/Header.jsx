@@ -60,6 +60,31 @@ class Header extends React.Component {
       super(props);
   }
   componentDidMount(){
+	  //check if there is local storage data 
+	  console.log("header was just mounted!")
+	  if(localStorage.getItem('user') != null){
+		  	this.props.dispatch({ type: 'CONNECT' });
+			this.props.dispatch({ type: 'SETUSER', value: localStorage.getItem('user')});
+			this.props.dispatch({ type: 'SETTOKEN', value: localStorage.getItem('token')});
+			this.props.dispatch({ type: 'SETEMAIL', value: localStorage.getItem('mail')});
+			//has the user last checked to be visible for others?
+			if(localStorage.getItem('status')==='visible'){
+					this.props.history.push(process.env.PUBLIC_URL+'/accueilUser');
+					this.props.dispatch({ type: 'SETUSERACTIVE' });
+					this.props.dispatch({ type: 'SETREQUESTWAITACTIVE' });
+			}
+			//has the user just found a match before leaving? if yes, forward to deck selection
+			if(localStorage.getItem('status')==='matched')
+				this.props.history.push(process.env.PUBLIC_URL+'/composerDeck');
+			//has the user submitted a deck before leaving?
+			if(localStorage.getItem('status')==='deckcomposed'){
+				this.props.history.push(process.env.PUBLIC_URL+'/composerDeck');
+			}
+			//has the user had a match started before leaving? if yes, forward to game
+			if(localStorage.getItem('status')==='game'){
+				//this.props.history.push(process.env.PUBLIC_URL+'/game');
+			}			
+	  }
   }
   componentDidUpdate(){	  
 	console.log("update!")
@@ -115,6 +140,7 @@ class Header extends React.Component {
 				this.props.dispatch({ type: 'DISCONNECT' });
 				this.props.dispatch({ type: 'SETUSERINACTIVE' });
 				console.log("setting user inactive"+this.props.useractive);
+				localStorage.clear();
 				this.props.history.push(process.env.PUBLIC_URL+'/');   
 				this.setState({connected: false})
 			}

@@ -49,6 +49,10 @@ class MenuListComposition extends React.Component {
 	this.props.history.push('/'+link);
 	this.handleClose();
   }
+  componentDidMount(){
+	  if(localStorage.getItem('status')==='visible') 
+		  this.setState({useractive : true})
+  }
   handleToggle = () => {
 	  if(this.state.useractive){
 		;//on sait pas si cette fonction est implementé coté serveur xD
@@ -68,6 +72,7 @@ class MenuListComposition extends React.Component {
 					this.setState({useractive:true});  
 					this.props.dispatch({ type: 'SETUSERACTIVE' });
 					this.props.dispatch({ type: 'SETREQUESTWAITACTIVE' });
+					localStorage.setItem('status', 'visible')
 				} else {
 					alert ("action failed. "+data.message);
 					this.handleRequestCloseDialog();

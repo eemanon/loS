@@ -103,6 +103,11 @@ class SignIn extends React.Component{
 					this.props.dispatch({ type: 'SETUSER', value: data.data.name});
 					this.props.dispatch({ type: 'SETTOKEN', value: data.data.token});
 					this.props.dispatch({ type: 'SETEMAIL', value: this.state.email});
+					//also, set storage token, mail, user and connect
+					localStorage.setItem('user', data.data.name)
+					localStorage.setItem('token', data.data.token)
+					localStorage.setItem('mail', this.state.email)
+					localStorage.setItem('status', 'connected')
 					this.props.history.push(process.env.PUBLIC_URL+'/accueilUser'); 
 				} else if(data.message=="Already connected"){
 					fetch(path+'/users/disconnect?email='+this.state.email+'&password='+this.state.password, {

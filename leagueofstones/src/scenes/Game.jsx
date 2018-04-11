@@ -28,6 +28,7 @@ class Game extends React.Component{
 		super(props);
 		this.state={
 			waiting: false,
+			tickWaiting: false,
 			player: {
 				name: "",
 				playerLifePoints: 0,
@@ -46,6 +47,7 @@ class Game extends React.Component{
 			}
 		}
 	}
+	
 	componentDidMount(){
 		console.log("mounting...")
 		this.updateGame();
@@ -119,9 +121,11 @@ class Game extends React.Component{
 				.then(function(data) {
 					console.log(data);
 					if(data.status==="ok"){
-						console.log("positive response...");
+						console.log("positive response, updating game");
+						this.setState({tickWaiting: true});
+						this.updateGame();
 						this.setState({waiting: true});
-						this.setupTimer();
+						this.tick()
 					} else {
 						alert ("action failed. "+data.message);
 					}
@@ -135,6 +139,7 @@ class Game extends React.Component{
 	}
 	
 	updateGame = () => {
+		this.setState({updatePending: true})
 		let url = path+"/match/getMatch";
 		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
 		.then(function(resp){return resp.json()})
@@ -171,10 +176,14 @@ class Game extends React.Component{
 										   turn: data.data.player1.turn}	
 								});				
 				}
-				
 			} else {
-				//alert ("action failed. "+data.message);
+				console.log("action failed. "+data.message);
 			}
+			if(this.state.tickWaiting){
+				this.setState({tickWaiting: false})
+				this.tick()
+			}
+			
 		}.bind(this))
 		.catch(function(error) {
 			console.log(error);
