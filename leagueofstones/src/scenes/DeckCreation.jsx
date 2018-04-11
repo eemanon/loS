@@ -6,6 +6,7 @@ import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
 import Avatar from 'material-ui/Avatar';
 import IconButton from 'material-ui/IconButton';
+import { CircularProgress } from 'material-ui/Progress';
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -56,6 +57,12 @@ const styles = {
 	list2: {
 		maxHeight: '35vh',
 		overflow: 'auto'
+	},
+	progress:{
+		margin: 'auto'
+	},
+	dialog:{
+		textAlign: 'center'
 	}
 };
 
@@ -98,6 +105,21 @@ class DeckCreation extends React.Component {
 		.catch(function(error) {
 			console.log(error);
 		}); 
+	  //call /match/getMatch for whatever buggy reason...
+	  let url2 = path+'/match/getMatch';
+		fetch(url2, {credentials: 'include', method: 'get', accept: 'application/json'})
+			.then(function(resp){return resp.json()})
+			.then(function(data) {
+				console.log(data);
+				if(data.status==="ok"){
+					console.log("positive response...");
+				} else {
+					alert ("action failed. "+data.message);
+				}
+		}.bind(this))
+		.catch(function(error) {
+			console.log(error);
+		});
   }
    removeCard = card => () => {
 	  this.setState({
@@ -181,6 +203,7 @@ class DeckCreation extends React.Component {
 					//lets suppose that's not the case. Then we cant go to the game. We have to wait  and ask the server when the game's ready. all the time.
 					this.setState({deckStatus: "decksubmitted"})
 					this.tick()
+					this.setState({open: true})
 				} else {
 					alert ("action failed. "+data.message);
 					this.handleRequestCloseDialog();
@@ -250,6 +273,10 @@ class DeckCreation extends React.Component {
 
 						</CardContent>
 					</Card>
+					<Dialog open={this.state.open} onClose={this.handleClose} style = {styles.dialog}>
+						<DialogTitle>{"Waiting for opponent"}</DialogTitle>
+						<CircularProgress className={classes.progress} style = {styles.progress} />
+					</Dialog>
 				</Grid>
 			</Grid>
 			);

@@ -10,23 +10,27 @@ const styles = {
 	},
 	heart: {
     	fontFamily: 'impact',
-    	fontSize: '20px',
     	textAlign: 'center',
     	color: 'white',
+		fontSize: '2vw',
 		backgroundImage: 'url('+process.env.PUBLIC_URL+'/images/heart.png'+')',
     	backgroundRepeat: 'no-repeat',
-    	backgroundSize: '100% 100%',
+    	backgroundSize: 'contain',
+		display: 'inline-block',
+		width: '100%',
+		height: '100%',
+		paddingTop: '25%', 
 	}
 }
 
-class OpponentLifePoints extends React.Component {
+class LifePoints extends React.Component {
 
 	render(){
 		return(
-			<Grid item xs={1} style={styles.heart}>{this.props.value}</Grid>
+			<div style={styles.heart}>{this.props.value}</div>
 		);
 	}
 
 }
 
-export default OpponentLifePoints;
+export default LifePoints;

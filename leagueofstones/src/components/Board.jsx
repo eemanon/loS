@@ -11,13 +11,13 @@ const styles = {
 	},
 }
 
-class PlayerHand extends React.Component {
+class Board extends React.Component {
 
 	render(){
 		return(
-			<Grid container spacing={24} style={styles.container}>
+			<Grid container spacing={20} style={styles.container}>
 				{this.props.value.map((item,index)=>(
-					<Grid item xs={6} sm={3}>
+					<Grid item xs={4} sm={2}>
 						<MyCard value={item}/>
 					</Grid>
 				))}
@@ -27,4 +27,4 @@ class PlayerHand extends React.Component {
 
 }
 
-export default PlayerHand;
+export default Board;
