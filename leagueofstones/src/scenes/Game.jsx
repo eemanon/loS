@@ -29,6 +29,8 @@ class Game extends React.Component{
 		this.state={
 			waiting: false,
 			tickWaiting: false,
+			victory: false,
+			currentlySelectedAttackCard: "",
 			player: {
 				name: "",
 				playerLifePoints: 0,
@@ -179,8 +181,13 @@ class Game extends React.Component{
 			} else {
 				console.log("action failed. "+data.message);
 			}
+			console.log("checking life points: "+this.state.opponent.opponentLifePoints)
+			if(this.state.opponent.opponentLifePoints<=0.0){
+				this.setState({victory: true});
+				this.setState({tickWaiting: false});
+			}
 			if(this.state.tickWaiting){
-				this.setState({tickWaiting: false})
+				this.setState({tickWaiting: false});
 				this.tick()
 			}
 			
@@ -190,16 +197,116 @@ class Game extends React.Component{
 		}); 
 	}
 	
+	playCard = (key) => {
+		console.log("playing "+key);
+		let url = path+'/match/playCard?card='+key;
+		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
+			.then(function(resp){return resp.json()})
+			.then(function(data) {
+				console.log(data);
+				if(data.status==="ok"){
+					this.updateGame();
+				} else {
+					alert ("action failed. "+data.message);
+				}
+		}.bind(this))
+		.catch(function(error) {
+			console.log(error);
+		}); 	  
+	}
+	setSelectedAttacker = (key) => {
+		if (this.state.currentlySelectedAttackCard === ""){
+			this.setState({currentlySelectedAttackCard: key});
+			return true;
+		}
+		else if (this.state.currentlySelectedAttackCard === key){
+			this.setState({currentlySelectedAttackCard: ""});
+			return true;
+		}
+		else {
+			alert("unselect you must, before chose another gladiator you can select!");
+			return false;
+		}
+		console.log(key+ " has been set as selected attacker")
+	}
+	setSelectedAttacked = (key) => {
+		//check if an attacker is picked.  If not, lament.
+		if (this.state.currentlySelectedAttackCard!==""){
+			let url = path+'/match/attack?card='+this.state.currentlySelectedAttackCard+"&ennemyCard="+key;
+			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
+				.then(function(resp){return resp.json()})
+				.then(function(data) {
+					console.log(data);
+					if(data.status==="ok"){
+						this.updateGame();
+					} else {
+						alert ("action failed. "+data.message);
+					}
+			}.bind(this))
+			.catch(function(error) {
+				console.log(error);
+			}); 	  
+		} else {
+			alert ("you must chose your champion before attacking this card!")
+		}
+	}
+	attackPlayer = () => {
+		console.log("attacking player at the heart...")
+		if(this.state.currentlySelectedAttackCard!==""){
+			let url = path+'/match/attackPlayer?card='+this.state.currentlySelectedAttackCard;
+			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
+				.then(function(resp){return resp.json()})
+				.then(function(data) {
+					console.log(data);
+					if(data.status==="ok"){
+						this.updateGame();
+					} else {
+						alert ("action failed. "+data.message);
+					}
+			}.bind(this))
+			.catch(function(error) {
+				console.log(error);
+			}); 	  
+		}
+	}
+	declareVictory = () => {
+		console.log("declaring victory!");
+		let url = path+'/match/attackPlayer?card='+this.state.currentlySelectedAttackCard;
+		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
+			.then(function(resp){return resp.json()})
+			.then(function(data) {
+				console.log(data);
+				if(data.status==="ok"){
+					console.log(data)
+					this.props.history.push(process.env.PUBLIC_URL+'/accueilUser');
+				} else {
+					alert ("action failed. "+data.message);
+				}
+		}.bind(this))
+		.catch(function(error) {
+			console.log(error);
+		}); 	  		
+	}
+	togglevid = () => {
+		this.setState({victory: false});
+		this.declareVictory();
+	}
+	
 	render(){
+		const lilvid = (<video width="960" height="540" autoPlay style = {styles.video} onClick = {this.togglevid}>
+			  <source src={process.env.PUBLIC_URL+"/videos/victory.webm"}></source>
+			  Your browser does not support the video tag.
+			</video>);
 		return (
 			<Grid container spacing={24} style={styles.container}>
 				<Grid item xs={12}>
-					<OpponentSide value={this.state.opponent}/>
+					<OpponentSide value={this.state.opponent} setSelectedAttacked={this.setSelectedAttacked} attackPlayer={this.attackPlayer} />
 				</Grid>
 				<Grid item xs={12} style={styles.divider}>
 				</Grid>
+				{this.state.victory?lilvid:""}
 				<Grid item xs={12}>
-					<PlayerSide  value={this.state.player} piocherCarte={this.piocherCarte} finirTour= {this.finirTour}/>	
+					<PlayerSide  playCard = {this.playCard} value={this.state.player} piocherCarte={this.piocherCarte} finirTour= {this.finirTour} setSelectedAttacker= {this.setSelectedAttacker} />	
 				</Grid>
 			</Grid>
 		);

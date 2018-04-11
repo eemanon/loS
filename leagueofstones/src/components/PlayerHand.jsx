@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import Grid from 'material-ui/Grid';
 import MyCard from './MyCard';
 
@@ -18,7 +17,7 @@ class PlayerHand extends React.Component {
 			<Grid container spacing={24} style={styles.container}>
 				{this.props.value.map((item,index)=>(
 					<Grid item xs={6} sm={3}>
-						<MyCard value={item}/>
+						<MyCard value={item} playCard={this.props.playCard} pos={"playerhand"}/>
 					</Grid>
 				))}
 			</Grid>

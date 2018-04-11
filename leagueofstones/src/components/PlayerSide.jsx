@@ -30,14 +30,14 @@ class PlayerSide extends React.Component {
 		console.log(this.props.value.board)
 		return(
 			<div>
-				<Grid container spacing={24} style={this.props.value.turn?styles.myturn:styles.notmyturn}>
-					<Grid item xs={12}>
+				<Grid container spacing={24}>
+					<Grid item xs={12} style={this.props.value.turn?styles.myturn:styles.notmyturn}>
 						<Grid container spacing={24} style={styles.container}>
 							<Grid item xs={1}>
 								<LifePoints value={this.props.value.playerLifePoints}/>
 							</Grid>
 							<Grid item xs={9}>
-								<Board value={this.props.value.board}/>
+								<Board value={this.props.value.board} setSelectedAttacker={this.props.setSelectedAttacker} pos={"board"} />
 							</Grid>
 							<Grid item xs={2}>
 								<Button style = {styles.button} onClick={this.props.finirTour}>Finir Tour </Button>
@@ -46,7 +46,7 @@ class PlayerSide extends React.Component {
 						</Grid>
 					</Grid>
 					<Grid item xs={12}>
-						<PlayerHand value={this.props.value.hand} />
+						<PlayerHand value={this.props.value.hand} playCard={this.props.playCard} />
 					</Grid>
 				</Grid>
 			</div>

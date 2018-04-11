@@ -30,16 +30,16 @@ class OpponentSide extends React.Component {
 		return(
 			<Grid container spacing={24} style={this.props.value.turn?styles.myturn:styles.notmyturn}>
 				<Grid item xs={12}>
-						<OpponentHand value={this.props.value.hand} />
+					<OpponentHand value={this.props.value.hand} />
 				</Grid>
 				<Grid item xs={2}>
 					<img style = {styles.img} src = {process.env.PUBLIC_URL+"/images/cards.png"} />
 				</Grid>
 				<Grid item xs={9}>
-					<Board value={this.props.value.board}/>
+					<Board value={this.props.value.board} pos="opponentboard" setSelectedAttacked = {this.props.setSelectedAttacked} />
 				</Grid>
 				<Grid item xs={1}>
-					<LifePoints value={this.props.value.opponentLifePoints}/>
+					<LifePoints value={this.props.value.opponentLifePoints} attackPlayer={this.props.attackPlayer} />
 				</Grid>
 			</Grid>
 		);

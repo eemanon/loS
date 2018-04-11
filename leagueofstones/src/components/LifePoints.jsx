@@ -24,10 +24,9 @@ const styles = {
 }
 
 class LifePoints extends React.Component {
-
 	render(){
 		return(
-			<div style={styles.heart}>{this.props.value}</div>
+			<div style={styles.heart} onClick={this.props.attackPlayer} >{Math.round(this.props.value,1)}</div>
 		);
 	}
 

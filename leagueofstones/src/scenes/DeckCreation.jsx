@@ -169,7 +169,9 @@ class DeckCreation extends React.Component {
 		console.log(error);
 	}); 
 	clearInterval(this.timerID);
+	console.log("deckstatus: "+this.state.deckStatus)
 	if(this.state.deckStatus==="decksubmitted")	{
+		console.log("continue waiting")
 		this.setupTimer();
 	}
 	 else 
@@ -210,7 +212,8 @@ class DeckCreation extends React.Component {
 					localStorage.setItem('status', 'deckcomposed')
 					//now the question is: has the opponent chosen his/her deck as well?
 					//lets suppose that's not the case. Then we cant go to the game. We have to wait  and ask the server when the game's ready. all the time.
-					this.setState({deckStatus: "decksubmitted"})
+					this.setState({deckStatus: "decksubmitted"});
+					console.log("deck submitted so deckstatus is "+this.state.deckStatus);
 					this.tick()
 					this.setState({open: true})
 				} else {

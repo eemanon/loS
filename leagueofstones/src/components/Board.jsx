@@ -15,10 +15,10 @@ class Board extends React.Component {
 
 	render(){
 		return(
-			<Grid container spacing={20} style={styles.container}>
+			<Grid container spacing={20} style={styles.container} spacing={16}>
 				{this.props.value.map((item,index)=>(
 					<Grid item xs={4} sm={2}>
-						<MyCard value={item}/>
+						<MyCard value={item} pos={this.props.pos} setSelectedAttacker={this.props.setSelectedAttacker} setSelectedAttacked = {this.props.setSelectedAttacked} />
 					</Grid>
 				))}
 			</Grid>

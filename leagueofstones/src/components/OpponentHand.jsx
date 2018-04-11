@@ -24,9 +24,7 @@ class OpponentHand extends React.Component {
 			<Grid container spacing={24} style={styles.container}>
 				{cards.map((item)=>(
 					<Grid item xs={2} sm={1}>
-
 							<img style = {styles.img} src = {process.env.PUBLIC_URL+"/images/card_hidden.png"} />
-
 					</Grid>
 				))}
 			</Grid>
