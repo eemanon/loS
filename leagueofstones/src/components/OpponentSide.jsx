@@ -29,6 +29,9 @@ class OpponentSide extends React.Component {
 	render(){
 		return(
 			<Grid container spacing={24} style={this.props.value.turn?styles.myturn:styles.notmyturn}>
+				<Grid item xs={12}>
+						<OpponentHand value={this.props.value.hand} />
+				</Grid>
 				<Grid item xs={2}>
 					<img style = {styles.img} src = {process.env.PUBLIC_URL+"/images/cards.png"} />
 				</Grid>

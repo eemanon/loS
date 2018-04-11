@@ -27,6 +27,7 @@ class Game extends React.Component{
 	constructor(props){
 		super(props);
 		this.state={
+			waiting: false,
 			player: {
 				name: "",
 				playerLifePoints: 0,
@@ -45,8 +46,95 @@ class Game extends React.Component{
 			}
 		}
 	}
-
 	componentDidMount(){
+		console.log("mounting...")
+		this.updateGame();
+		if(!this.state.player.turn){
+			if(!this.state.waiting){
+				console.log("start asking server continously");
+				this.setState({waiting: true});
+				this.setupTimer();
+			}
+		} else {
+			console.log("it's your turn")
+		}
+	}
+
+	
+	setupTimer = () => {
+		this.timerID = setInterval(
+		  () => this.tick(),
+		  2000
+		);
+	}
+	tick() {
+		console.log("GameWaitingtick");
+		console.log(this.state.player.turn);
+		this.updateGame();
+		clearInterval(this.timerID);
+		if(!this.state.player.turn){
+			console.log("still not your turn");
+			this.setupTimer();
+		} else {
+			console.log("your turn now, timer stopped")
+			this.setState({waiting: false})
+		}
+	}
+	
+	piocherCarte = () =>{
+		console.log("pioching carte");
+		if(this.state.player.turn){
+			console.log("your turn")
+			let url = path+'/match/pickCard';
+			console.log(url)
+			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
+				.then(function(resp){return resp.json()})
+				.then(function(data) {
+					console.log(data);
+					if(data.status==="ok"){
+						console.log("positive response...");
+						this.updateGame();
+					} else {
+						alert ("action failed. "+data.message);
+						this.handleRequestCloseDialog();
+					}
+			}.bind(this))
+			.catch(function(error) {
+				console.log(error);
+			}); 
+		} else {
+			console.log("not your turn.")
+		}
+		
+	}
+	
+	finirTour = () =>{
+		console.log("je finis mon tour")
+		if(this.state.player.turn){
+			console.log("your turn")
+			let url = path+'/match/endTurn';
+			console.log(url)
+			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
+				.then(function(resp){return resp.json()})
+				.then(function(data) {
+					console.log(data);
+					if(data.status==="ok"){
+						console.log("positive response...");
+						this.setState({waiting: true});
+						this.setupTimer();
+					} else {
+						alert ("action failed. "+data.message);
+					}
+			}.bind(this))
+			.catch(function(error) {
+				console.log(error);
+			}); 
+		} else {
+			console.log("not your turn.")
+		}
+	}
+	
+	updateGame = () => {
 		let url = path+"/match/getMatch";
 		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
 		.then(function(resp){return resp.json()})
@@ -92,7 +180,7 @@ class Game extends React.Component{
 			console.log(error);
 		}); 
 	}
-
+	
 	render(){
 		return (
 			<Grid container spacing={24} style={styles.container}>
@@ -102,7 +190,7 @@ class Game extends React.Component{
 				<Grid item xs={12} style={styles.divider}>
 				</Grid>
 				<Grid item xs={12}>
-					<PlayerSide  value={this.state.player}/>	
+					<PlayerSide  value={this.state.player} piocherCarte={this.piocherCarte} finirTour= {this.finirTour}/>	
 				</Grid>
 			</Grid>
 		);

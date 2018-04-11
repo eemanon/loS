@@ -47,7 +47,7 @@ class Home extends React.Component {
   }
   state = {
     open: false,
-	video: false
+	video: false,
   };
 
   handleClickOpen = () => {
@@ -64,6 +64,12 @@ class Home extends React.Component {
   togglevid = () => {
 	  let vid = !this.state.video;
 	  this.setState({video: vid});
+  }
+  storage =() => {
+	  localStorage.setItem('hell', "mammamia")
+  }
+  recover = () => {
+	  alert(localStorage.getItem('hell'));
   }
 	
 	render() {
@@ -121,6 +127,9 @@ class Home extends React.Component {
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
 						</CardContent>
 						<Button onClick={this.handleClickOpen}>Click me</Button><Button onClick={this.togglevid}>Check it out!</Button>
+							<Button onClick={this.recover}>rec</Button>
+							<Button onClick={this.storage}>store</Button>
+
 						<Dialog
 						  open={this.state.open}
 						  onClose={this.handleClose}

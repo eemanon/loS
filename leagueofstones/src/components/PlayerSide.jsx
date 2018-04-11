@@ -25,7 +25,7 @@ const styles = {
 	}
 }
 
-class PlayerSide extends React.Component {
+class PlayerSide extends React.Component {	
 	render(){
 		console.log(this.props.value.board)
 		return(
@@ -40,8 +40,8 @@ class PlayerSide extends React.Component {
 								<Board value={this.props.value.board}/>
 							</Grid>
 							<Grid item xs={2}>
-								<Button style = {styles.button}>Finir Tour </Button>
-								<img style = {styles.img} src = {process.env.PUBLIC_URL+"/images/cards.png"} />
+								<Button style = {styles.button} onClick={this.props.finirTour}>Finir Tour </Button>
+								<img style = {styles.img} src = {process.env.PUBLIC_URL+"/images/cards.png"} onClick={this.props.piocherCarte} />
 							</Grid>
 						</Grid>
 					</Grid>

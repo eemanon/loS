@@ -62,7 +62,9 @@ const styles = {
 		margin: 'auto'
 	},
 	dialog:{
-		textAlign: 'center'
+		textAlign: 'center',
+		overflow: 'hidden',
+		minHeight: '150px'
 	}
 };
 
@@ -274,8 +276,9 @@ class DeckCreation extends React.Component {
 						</CardContent>
 					</Card>
 					<Dialog open={this.state.open} onClose={this.handleClose} style = {styles.dialog}>
-						<DialogTitle>{"Waiting for opponent"}</DialogTitle>
+						<DialogTitle>{"Waiting for opponent"}</DialogTitle><DialogContent>
 						<CircularProgress className={classes.progress} style = {styles.progress} />
+						</DialogContent>
 					</Dialog>
 				</Grid>
 			</Grid>
