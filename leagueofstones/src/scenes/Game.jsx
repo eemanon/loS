@@ -5,8 +5,11 @@ import PlayerSide from '../components/PlayerSide';
 import Grid from 'material-ui/Grid';
 import Divider from 'material-ui/Divider'
 import { withStyles } from 'material-ui/styles';
+import axios from 'axios';
+
 
 var path = require('../backendPath').backendpath;
+
 
 
 const styles = {
@@ -20,6 +23,11 @@ const styles = {
 		backgroundColor: '#000000',
 		padding: '0px',
 	},
+	video:{
+		top: '10%',
+		position: 'fixed',
+		width: '100%',
+	}
 }
 
 class Game extends React.Component{
@@ -31,6 +39,7 @@ class Game extends React.Component{
 			tickWaiting: false,
 			victory: false,
 			currentlySelectedAttackCard: "",
+			initiallyRetrieved: false,
 			player: {
 				name: "",
 				playerLifePoints: 0,
@@ -49,21 +58,47 @@ class Game extends React.Component{
 			}
 		}
 	}
-	
+	//COMPONENT DID UPDATE AND REPLACE FETCH
 	componentDidMount(){
-		console.log("mounting...")
-		this.updateGame();
-		if(!this.state.player.turn){
-			if(!this.state.waiting){
-				console.log("start asking server continously");
-				this.setState({waiting: true});
-				this.setupTimer();
+		console.log("[Game]\tmounting")
+		if(this.props.token==="")	
+			console.log("[Lobby]\tno valid token yet")
+		else{
+			this.updateGame();
+			this.setState({initiallyRetrieved: true})
+			if(!this.state.player.turn){
+				if(!this.state.waiting){
+					console.log("start asking server continously");
+					this.setState({waiting: true});
+					this.setupTimer();
+				}
+			} else {
+			console.log("[Game]\tit's your turn")
 			}
-		} else {
-			console.log("it's your turn")
+		}
+	}
+	
+	componentDidUpdate(){
+		if(this.props.token!=="" && !this.state.initiallyRetrieved){
+			console.log("[Lobby]\t\tgetting Game Info first time")
+			this.updateGame()
+			this.setState({initiallyRetrieved: true})
+			if(!this.state.player.turn){
+				if(!this.state.waiting){
+					console.log("start asking server continously");
+					this.setState({waiting: true});
+					this.setupTimer();
+				}
+			} else {
+			console.log("[Game]\tit's your turn")
+			}
 		}
 	}
 
+	componentWillUnmount(){
+		console.log("[game]\tunmounting")
+		clearInterval(this.timerID)
+	}
 	
 	setupTimer = () => {
 		this.timerID = setInterval(
@@ -71,6 +106,7 @@ class Game extends React.Component{
 		  2000
 		);
 	}
+	
 	tick() {
 		console.log("GameWaitingtick");
 		console.log(this.state.player.turn);
@@ -88,13 +124,12 @@ class Game extends React.Component{
 	piocherCarte = () =>{
 		console.log("pioching carte");
 		if(this.state.player.turn){
-			console.log("your turn")
+			console.log("[Game]\tyour turn")
 			let url = path+'/match/pickCard';
-			console.log(url)
-			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-				.then(function(resp){return resp.json()})
-				.then(function(data) {
-					console.log(data);
+				axios.get(url,{params:{
+			token: this.props.token
+			}}).then(res => {
+				let data = res.data;
 					if(data.status==="ok"){
 						console.log("positive response...");
 						this.updateGame();
@@ -102,10 +137,7 @@ class Game extends React.Component{
 						alert ("action failed. "+data.message);
 						this.handleRequestCloseDialog();
 					}
-			}.bind(this))
-			.catch(function(error) {
-				console.log(error);
-			}); 
+			});
 		} else {
 			console.log("not your turn.")
 		}
@@ -113,15 +145,14 @@ class Game extends React.Component{
 	}
 	
 	finirTour = () =>{
-		console.log("je finis mon tour")
+		console.log("[Game]\tje finis mon tour")
 		if(this.state.player.turn){
 			console.log("your turn")
 			let url = path+'/match/endTurn';
-			console.log(url)
-			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-				.then(function(resp){return resp.json()})
-				.then(function(data) {
-					console.log(data);
+			axios.get(url,{params:{
+			token: this.props.token
+			}}).then(res => {
+				let data = res.data;
 					if(data.status==="ok"){
 						console.log("positive response, updating game");
 						this.setState({tickWaiting: true});
@@ -131,10 +162,7 @@ class Game extends React.Component{
 					} else {
 						alert ("action failed. "+data.message);
 					}
-			}.bind(this))
-			.catch(function(error) {
-				console.log(error);
-			}); 
+			});
 		} else {
 			console.log("not your turn.")
 		}
@@ -142,78 +170,84 @@ class Game extends React.Component{
 	
 	updateGame = () => {
 		this.setState({updatePending: true})
+		console.log("[Game] token: "+this.props.token)
 		let url = path+"/match/getMatch";
-		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-		.then(function(resp){return resp.json()})
-		.then(function(data) {
-			console.log(data);
-			if(data.status==="ok"){
-				console.log(this.props.user);
-				if(this.props.user===data.data.player1.name){
-					this.setState({player:{name: data.data.player1.name,
-										   playerLifePoints: data.data.player1.hp,
-										   hand: data.data.player1.hand,
-										   deck: data.data.player1.deck,
-										   board: data.data.player1.board,
-										   turn: data.data.player1.turn},
-									opponent:{name: data.data.player2.name,
-										   opponentLifePoints: data.data.player2.hp,
-										   hand: data.data.player2.hand,
-										   deck: data.data.player2.deck,
-										   board: data.data.player2.board,
-										   turn: data.data.player2.turn}
-								});
-				}else if(this.props.user===data.data.player2.name){
-					this.setState({player:{name: data.data.player2.name,
-										   playerLifePoints: data.data.player2.hp,
-										   hand: data.data.player2.hand,
-										   deck: data.data.player2.deck,
-										   board: data.data.player2.board,
-										   turn: data.data.player2.turn},
-									opponent:{name: data.data.player1.name,
-										   opponentLifePoints: data.data.player1.hp,
-										   hand: data.data.player1.hand,
-										   deck: data.data.player1.deck,
-										   board: data.data.player1.board,
-										   turn: data.data.player1.turn}	
-								});				
+		axios.get(url,{params:{
+			token: this.props.token
+			}}).then(res => {
+				let data = res.data;
+				if(data.status==="ok"){
+					console.log(this.props.user);
+					if(this.props.user===data.data.player1.name){
+						this.setState({player:{name: data.data.player1.name,
+											   playerLifePoints: data.data.player1.hp,
+											   hand: data.data.player1.hand,
+											   deck: data.data.player1.deck,
+											   board: data.data.player1.board,
+											   turn: data.data.player1.turn},
+										opponent:{name: data.data.player2.name,
+											   opponentLifePoints: data.data.player2.hp,
+											   hand: data.data.player2.hand,
+											   deck: data.data.player2.deck,
+											   board: data.data.player2.board,
+											   turn: data.data.player2.turn}
+									});
+					}else if(this.props.user===data.data.player2.name){
+						this.setState({player:{name: data.data.player2.name,
+											   playerLifePoints: data.data.player2.hp,
+											   hand: data.data.player2.hand,
+											   deck: data.data.player2.deck,
+											   board: data.data.player2.board,
+											   turn: data.data.player2.turn},
+										opponent:{name: data.data.player1.name,
+											   opponentLifePoints: data.data.player1.hp,
+											   hand: data.data.player1.hand,
+											   deck: data.data.player1.deck,
+											   board: data.data.player1.board,
+											   turn: data.data.player1.turn}	
+									});				
+					}
+				} else {
+					console.log("[Game]\tupdate failed. "+data.message);
 				}
-			} else {
-				console.log("action failed. "+data.message);
-			}
-			console.log("checking life points: "+this.state.opponent.opponentLifePoints)
-			if(this.state.opponent.opponentLifePoints<=0.0){
-				this.setState({victory: true});
-				this.setState({tickWaiting: false});
-			}
-			if(this.state.tickWaiting){
-				this.setState({tickWaiting: false});
-				this.tick()
-			}
+				console.log("[Game]\tchecking life points: "+this.state.opponent.opponentLifePoints)
+				//I won :) 
+				if(this.state.opponent.opponentLifePoints<=0.0){
+					this.setState({victory: true});
+					this.setState({tickWaiting: false});
+					clearInterval(this.timerID);
+				}
+				//I lost :(
+				else if(this.state.player.playerLifePoints<=0.0){
+					this.setState({tickWaiting: false});
+					clearInterval(this.timerID);
+					alert("You lost. Shame on you")
+					this.props.history.push(process.env.PUBLIC_URL+'/accueilUser');
+					
+				}				
+				if(this.state.tickWaiting){
+					this.setState({tickWaiting: false});
+					this.tick()
+				}
 			
-		}.bind(this))
-		.catch(function(error) {
-			console.log(error);
-		}); 
+		});
 	}
 	
 	playCard = (key) => {
 		console.log("playing "+key);
 		let url = path+'/match/playCard?card='+key;
-		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-			.then(function(resp){return resp.json()})
-			.then(function(data) {
-				console.log(data);
+		axios.get(url,{params:{
+			token: this.props.token
+			}}).then(res => {
+				let data = res.data;
 				if(data.status==="ok"){
 					this.updateGame();
 				} else {
 					alert ("action failed. "+data.message);
 				}
-		}.bind(this))
-		.catch(function(error) {
-			console.log(error);
-		}); 	  
+		});
 	}
+	
 	setSelectedAttacker = (key) => {
 		if (this.state.currentlySelectedAttackCard === ""){
 			this.setState({currentlySelectedAttackCard: key});
@@ -229,67 +263,63 @@ class Game extends React.Component{
 		}
 		console.log(key+ " has been set as selected attacker")
 	}
+	
 	setSelectedAttacked = (key) => {
 		//check if an attacker is picked.  If not, lament.
 		if (this.state.currentlySelectedAttackCard!==""){
 			let url = path+'/match/attack?card='+this.state.currentlySelectedAttackCard+"&ennemyCard="+key;
-			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-				.then(function(resp){return resp.json()})
-				.then(function(data) {
-					console.log(data);
+				axios.get(url,{params:{
+				token: this.props.token
+				}})
+				.then(res => {
+					let data = res.data	
 					if(data.status==="ok"){
 						this.updateGame();
 					} else {
 						alert ("action failed. "+data.message);
 					}
-			}.bind(this))
-			.catch(function(error) {
-				console.log(error);
-			}); 	  
+				}); 	  
 		} else {
 			alert ("you must chose your champion before attacking this card!")
 		}
 	}
+	
 	attackPlayer = () => {
 		console.log("attacking player at the heart...")
 		if(this.state.currentlySelectedAttackCard!==""){
 			let url = path+'/match/attackPlayer?card='+this.state.currentlySelectedAttackCard;
-			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-				.then(function(resp){return resp.json()})
-				.then(function(data) {
-					console.log(data);
+			axios.get(url,{params:{
+			token: this.props.token
+			}}).then(res => {
+				let data = res.data;
 					if(data.status==="ok"){
 						this.updateGame();
 					} else {
 						alert ("action failed. "+data.message);
 					}
-			}.bind(this))
-			.catch(function(error) {
-				console.log(error);
-			}); 	  
+			});  
 		}
 	}
-	declareVictory = () => {
-		console.log("declaring victory!");
-		let url = path+'/match/attackPlayer?card='+this.state.currentlySelectedAttackCard;
-		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-			.then(function(resp){return resp.json()})
-			.then(function(data) {
-				console.log(data);
+	
+	endMatch = () => {
+		console.log("[Game] over");
+		let url = path+'/match/finishMatch';
+		axios.get(url,{params:{
+			token: this.props.token
+			}}).then(res => {
+				let data = res.data;
 				if(data.status==="ok"){
 					console.log(data)
 					this.props.history.push(process.env.PUBLIC_URL+'/accueilUser');
 				} else {
 					alert ("action failed. "+data.message);
 				}
-		}.bind(this))
-		.catch(function(error) {
-			console.log(error);
-		}); 	  		
+		});  		
 	}
+	
 	togglevid = () => {
 		this.setState({victory: false});
-		this.declareVictory();
+		this.endMatch();
 	}
 	
 	render(){
@@ -311,7 +341,6 @@ class Game extends React.Component{
 			</Grid>
 		);
 	}
-
 }
 
 function mapStateToProps(state) {
@@ -319,6 +348,7 @@ function mapStateToProps(state) {
     user: state.user,
 	connected: state.connected,
 	email: state.email,
+	token: state.token
   };
 }
 

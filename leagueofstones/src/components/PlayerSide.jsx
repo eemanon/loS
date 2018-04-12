@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import Grid from 'material-ui/Grid';
 import LifePoints from './LifePoints';
 import PlayerHand from './PlayerHand';

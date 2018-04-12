@@ -1,27 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
-import Avatar from 'material-ui/Avatar';
 import IconButton from 'material-ui/IconButton';
 import { CircularProgress } from 'material-ui/Progress';
 import Dialog, {
-  DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from 'material-ui/Dialog';
 import { connect } from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import Card, { CardActions, CardContent, CardMedia, CardHeader } from 'material-ui/Card';
+import Card, { CardActions, CardContent, CardHeader } from 'material-ui/Card';
 import List, { 
   ListItem,
-  ListItemIcon,
   ListItemSecondaryAction,
   ListItemText, } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
+import axios from 'axios';
+
 
 var path = require('../backendPath.js').backendpath
 
@@ -69,12 +66,10 @@ const styles = {
 };
 
 class DeckCreation extends React.Component {
-	constructor(props) {
-      super(props);
-  }
   state = {
     open: false,
 	connected: false,
+	cardsRetrieved: false,
 	cardsAvailable: [],
 	cardsInDeck: [],
 	deckStatus: 'nodeck'
@@ -88,15 +83,23 @@ class DeckCreation extends React.Component {
     this.setState({ open: false });
   };
   componentDidMount(){
-	  //already deck submitted?
-	  if((localStorage.getItem('status')!=='deckcomposed')){
+	if(this.props.token==="")	
+		console.log("[DeckCreation]\tno valid token yet")
+	else{
+		this.retrieveCards()
+	}
+  }
+  retrieveCards(){
+	if((localStorage.getItem('status')!=='deckcomposed')){
 		  console.log("not deck composed: "+localStorage.getItem('status'))
 
 		  //load all cards 
 		  let url = path+'/cards/getAll';
-			fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-				.then(function(resp){return resp.json()})
-				.then(function(data) {
+			axios.get(url, {params:{
+					token: this.props.token
+				}})
+					.then(res => {
+					let data = res.data
 					console.log(data);
 					if(data.status==="ok"){
 						console.log("positive response...");
@@ -106,29 +109,40 @@ class DeckCreation extends React.Component {
 						alert ("action failed. "+data.message);
 						this.handleRequestCloseDialog();
 					}
-			}.bind(this))
-			.catch(function(error) {
-				console.log(error);
-			}); 
+			})
 		  //call /match/getMatch for whatever reason...
+		  console.log(this.props.tokenN)
 		  let url2 = path+'/match/getMatch';
-			fetch(url2, {credentials: 'include', method: 'get', accept: 'application/json'})
-				.then(function(resp){return resp.json()})
-				.then(function(data) {
+						axios.get(url2, {params:{
+					token: this.props.token
+				}})
+				.then(res => {
+					let data = res.data
 					console.log(data);
 					if(data.status==="ok"){
 						console.log("positive response...");
 					} else {
 						alert ("action failed. "+data.message);
 					}
-			}.bind(this))
-			.catch(function(error) {
-				console.log(error);
-			});
-		} else {
-			this.tick()
-		}
+				})
+	} else {
+		this.tick()
+	}
   }
+	componentWillUnmount(){
+		console.log("[DeckCreation]\tunmounting")
+		clearInterval(this.timerID)
+	}
+	componentDidUpdate(){
+	  console.log("[DeckCreation]\tupdated")
+	  if(this.props.token!=="" && !this.state.cardsRetrieved){
+		console.log("[DeckCreation]\twe have a token: "+this.props.token);
+		console.log("[DeckCreation]\tRetrieving cards");
+		this.retrieveCards();
+		this.setState({cardsRetrieved: true});
+	  }
+	}
+  
    removeCard = card => () => {
 	  this.setState({
 		  cardsAvailable: [...this.state.cardsAvailable, card]
@@ -142,41 +156,39 @@ class DeckCreation extends React.Component {
   setupTimer = () => {
 	  	this.timerID = setInterval(
 		  () => this.tick(),
-		  2000
+		  3000
 		);
   }
   
     tick() {
 	console.log("tick");
 	let url = path+'/match/getMatch'
-	console.log(url)
-	fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-		.then(function(resp){return resp.json()})
-		.then(function(data) {
-			console.log(data);
-			if(data.status==="ok"){
+	axios.get(url, {params:{
+		token: this.props.token
+	}})
+	.then(res => {
+		let data = res.data;
+		if(data.status==="ok"){
 				console.log(data);
 				//if the match has begun, go to the game component
 				//and change state deckStatus for doing so.
 				if(data.data.status!=="Deck is pending")
 					this.setState({deckStatus: "opponentready"})				
-			} else {
-				alert ("action failed. "+data.message);
-				this.handleRequestCloseDialog();
-			}
-	}.bind(this))
-	.catch(function(error) {
-		console.log(error);
-	}); 
+		} else {
+			alert ("action failed. "+data.message);
+			this.handleRequestCloseDialog();
+		}
+	})
 	clearInterval(this.timerID);
-	console.log("deckstatus: "+this.state.deckStatus)
+	console.log("[DeckCreation]\tdeckstatus: "+this.state.deckStatus)
 	if(this.state.deckStatus==="decksubmitted")	{
-		console.log("continue waiting")
+		console.log("[DeckCreation]\tcontinue waiting")
 		this.setupTimer();
 	}
-	 else 
+	 else {
 		 localStorage.setItem('status', 'game')
 		 this.props.history.push(process.env.PUBLIC_URL+'/game'); 
+	 }
 	}
   
   addCard = card => () =>{
@@ -203,10 +215,10 @@ class DeckCreation extends React.Component {
 			//submit informaiton
 			let url = path+'/match/initDeck?deck='+JSON.stringify(arr);
 			console.log(url)
-		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-			.then(function(resp){return resp.json()})
-			.then(function(data) {
-				console.log(data);
+			axios.get(url, {params:{
+				token: this.props.token
+			}}).then(res => {
+				let data = res.data
 				if(data.status==="ok"){
 					console.log("positive response...");
 					localStorage.setItem('status', 'deckcomposed')
@@ -220,10 +232,7 @@ class DeckCreation extends React.Component {
 					alert ("action failed. "+data.message);
 					this.handleRequestCloseDialog();
 				}
-		}.bind(this))
-		.catch(function(error) {
-			console.log(error);
-		}); 
+			})
 		} else {
 			console.log("argh")
 		}
@@ -304,7 +313,8 @@ class DeckCreation extends React.Component {
 function mapStateToProps(state) {
   return {
 	connected: state.connected,
-	user: state.user
+	user: state.user,
+	token: state.token
   };
 }
 

@@ -1,7 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Card, { CardActions, CardContent, CardMedia, CardTitle } from 'material-ui/Card';
-import { connect } from 'react-redux';
+import Card, { CardContent, CardMedia } from 'material-ui/Card';
 import Grid from 'material-ui/Grid';
 
 const styles = {
@@ -77,7 +75,7 @@ class MyCard extends React.Component{
 	}
 	render(){
 		const props = this.props;
-		if (props.value != undefined) {
+		if (props.value !== undefined) {
 			var url = "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+props.value.key+"_0.jpg";
 			return (
 				<Card className="myCard" onClick={() => this.cardAction(props.value.key, props.pos)} style = {this.state.cardselected?styles.cardActive:styles.cardInActive}>

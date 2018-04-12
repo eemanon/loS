@@ -12,8 +12,10 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import { connect } from 'react-redux';
 
-import Card, { CardActions, CardContent, CardMedia } from 'material-ui/Card';
+import axios from 'axios';
 
+import Card, { CardActions, CardContent, CardMedia } from 'material-ui/Card';
+var path = require('../backendPath.js').backendpath
 const styles = {
 	container: {
 		backgroundRepeat: 'no-repeat',
@@ -65,13 +67,14 @@ class Home extends React.Component {
 	  let vid = !this.state.video;
 	  this.setState({video: vid});
   }
-  storage =() => {
-	  localStorage.setItem('hell', "mammamia")
+  cors = () => {
+	  let url = path+'/match/getMatch';
+		axios.get(url)
+		  .then(res => {
+			console.log(res.data.message);
+		  })
+	  
   }
-  recover = () => {
-	  alert(localStorage.getItem('hell'));
-  }
-	
 	render() {
 		const lilvid = (<video width="960" height="540" autoPlay style = {styles.video} onClick = {this.togglevid}>
 			  <source src={process.env.PUBLIC_URL+"/videos/victory.webm"}></source>
@@ -127,9 +130,7 @@ class Home extends React.Component {
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
 						</CardContent>
 						<Button onClick={this.handleClickOpen}>Click me</Button><Button onClick={this.togglevid}>Check it out!</Button>
-							<Button onClick={this.recover}>rec</Button>
-							<Button onClick={this.storage}>store</Button>
-
+						<Button onClick={this.cors}>Cors it out!</Button>
 						<Dialog
 						  open={this.state.open}
 						  onClose={this.handleClose}

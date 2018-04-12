@@ -14,7 +14,7 @@ import { ListItemIcon, ListItemText } from 'material-ui/List';
 import HighlightOffIcon from 'material-ui-icons/HighlightOff';
 import DeleteForeverIcon from 'material-ui-icons/DeleteForever';
 import Checkbox from 'material-ui/Checkbox';
-
+import axios from 'axios';
 
 var path = require('../../backendPath.js').backendpath
 
@@ -50,37 +50,30 @@ class MenuListComposition extends React.Component {
 	this.handleClose();
   }
   componentDidMount(){
+	  console.log("[Menu]\tmounting")
 	  if(localStorage.getItem('status')==='visible') 
 		  this.setState({useractive : true})
   }
   handleToggle = () => {
 	  if(this.state.useractive){
-		;//on sait pas si cette fonction est implementé coté serveur xD
-		//this.setState({useractive:false});
-		//this.props.dispatch({ type: 'SETUSERINACTIVE' });
+		;//serversidely not implemented...yet
 	  } else {
-		console.log("adding you to the list of players...")
-		console.log(this);
-		let url = path+'/matchmaking/participate';
-		console.log(url);
-		fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-			.then(function(resp){return resp.json()})
-			.then(function(data) {
-				console.log(data);
-				if(data.status==="ok"){
-					console.log("positive response...");
-					this.setState({useractive:true});  
-					this.props.dispatch({ type: 'SETUSERACTIVE' });
-					this.props.dispatch({ type: 'SETREQUESTWAITACTIVE' });
-					localStorage.setItem('status', 'visible')
-				} else {
-					alert ("action failed. "+data.message);
-					this.handleRequestCloseDialog();
-				}
-		}.bind(this))
-		.catch(function(error) {
-			console.log(error);
-		}); 
+	  console.log("[MenuAccount]\tadding to active list")
+		let url = path+'/matchmaking/participate';		
+		axios.get(url, {params: {token: localStorage.getItem('token')}})
+			.then(res => {
+			let data = res.data
+			if(data.status==="ok"){
+				console.log("positive response...");
+				this.setState({useractive:true});  
+				this.props.dispatch({ type: 'SETUSERACTIVE' });
+				this.props.dispatch({ type: 'SETREQUESTWAITACTIVE' });
+				localStorage.setItem('status', 'visible')
+			} else {
+				alert ("action failed. "+data.message);
+				this.handleRequestCloseDialog();
+			}		
+		});
 	  }
   }
   render() {

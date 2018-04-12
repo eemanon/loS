@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import Home from './scenes/Home'
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -8,8 +7,7 @@ import { createStore } from 'redux';
 import DeckCreation from "./scenes/DeckCreation"
 import {
   BrowserRouter as Router,
-  Route,
-  Link
+  Route
 } from 'react-router-dom';
 
 import SignInScreen from "./scenes/SignIn";

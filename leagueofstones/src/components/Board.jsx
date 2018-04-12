@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import Grid from 'material-ui/Grid';
 import MyCard from './MyCard';
 

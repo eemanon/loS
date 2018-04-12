@@ -16,6 +16,8 @@ import { CircularProgress } from 'material-ui/Progress';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import axios from 'axios';
+
 var path = require('../backendPath').backendpath
 
 
@@ -89,16 +91,11 @@ class SignIn extends React.Component{
   
   handleSubmit() {
 		this.setCharging();
-		fetch(path+'/users/connect?email='+this.state.email+'&password='+this.state.password, {
-          method: 'GET',
-		  mode: 'cors',
-          headers: {
-            Accept: 'application/json'
-          },
-          credentials: 'include'
-        }).then(function(resp){return resp.json()})
-				.then(function(data) {
-				if (data.status==="ok"){
+		axios.get(path+'/users/connect?email='+this.state.email+'&password='+this.state.password)
+		  .then(res => {
+			let data = res.data
+			if (data.status==="ok"){
+					console.log("[SignIn]\tLogin Successful")
 					this.props.dispatch({ type: 'CONNECT' });
 					this.props.dispatch({ type: 'SETUSER', value: data.data.name});
 					this.props.dispatch({ type: 'SETTOKEN', value: data.data.token});
@@ -110,29 +107,22 @@ class SignIn extends React.Component{
 					localStorage.setItem('status', 'connected')
 					this.props.history.push(process.env.PUBLIC_URL+'/accueilUser'); 
 				} else if(data.message=="Already connected"){
-					fetch(path+'/users/disconnect?email='+this.state.email+'&password='+this.state.password, {
-					  method: 'GET',
-					  mode: 'cors',
-					  headers: {
-						Accept: 'application/json'
-					  },
-					  credentials: 'include'
-					}).then(function(resp){return resp.json()})
-						.then(function(data) {
+					console.log("[SignIn]\Disconnecting")
+					axios.get(path+'/users/disconnect?email='+this.state.email+'&password='+this.state.password)
+					.then(res => {
+						let data = res.data
 							if (data.status==="ok"){
+							console.log("[SignIn]\tReconnecting")
 								this.handleSubmit();
 							}
-					}.bind(this));
+					
+					});
 				} else {
 					alert("Erreur. "+data.message);
-					this.setCharging();
+					
 				}
-				
-			}.bind(this))
-			.catch(function(error) {
-				alert(error);
 				this.setCharging();
-			}); 
+		  });
   };
 
 

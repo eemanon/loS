@@ -15,7 +15,7 @@ import { CircularProgress } from 'material-ui/Progress';
 
 import { connect } from 'react-redux';
 
-
+import axios from 'axios';
 
 var path = require('../backendPath.js').backendpath
 
@@ -76,54 +76,42 @@ class SignIn extends React.Component{
 	  this.validate = this.validate.bind(this);
   };
 	
-  handleChange = prop => event => {
-    this.setState({ [prop]: event.target.value });
+	handleChange = prop => event => {
+	this.setState({ [prop]: event.target.value });
 
-  };
-  setCharging(){
+	};
+	setCharging(){
 	if(!this.state.checking)
 		this.setState({ checking: true });
 	else
 		this.setState({ checking: false });	
-  };
-  validate(mail, user, password){
+	};
+	validate(mail, user, password){
 	  //validates the hell out of the data
 	  return true;
-  }
-  handleSubmit() {
+	}
+	
+	handleSubmit() {
 		this.setCharging();
 		if(this.validate){
 			let url = path+'/users/subscribe?email='+this.state.mail+'&password='+this.state.password+'&name='+this.state.pseudo;
-			console.log(url);
-			fetch(url, {
-				method: 'GET',
-				mode: 'cors',
-				headers: {
-				Accept: 'application/json'
-			},
-			credentials: 'include'
-			}).then(function(resp){return resp.json()})
-				.then(function(data) {
-					console.log(data);
-					if(data.status==='ok'){
-						this.setCharging();
-						alert("Utilisateur créé. Tu peux desormais te connecter.")
-						this.props.history.push(process.env.PUBLIC_URL+'/');  
-					} else {
-						alert("ca n'a pas marché. "+data.message);
-						this.setCharging();
-					}				
-			}.bind(this))
-			.catch(function(error) {
-				alert(error);
-				this.setCharging();
-			}); 		
+			axios.get(url)
+			.then(res => {
+				let data = res.data
+				if(data.status==='ok'){
+					this.setCharging();
+					alert("Utilisateur créé. Tu peux desormais te connecter.")
+					this.props.history.push(process.env.PUBLIC_URL+'/');  
+				} else {
+					alert("ca n'a pas marché. "+data.message);
+					this.setCharging();
+				}							
+			})
 		} else {
 			this.setCharging();
 			alert("Please check that you enter an email, a password and a name");
-		}
-
-  };
+		}	
+	};
 
 
   render(){

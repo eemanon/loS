@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import Grid from 'material-ui/Grid';
 import LifePoints from './LifePoints';
 import OpponentHand from './OpponentHand';
@@ -33,7 +32,7 @@ class OpponentSide extends React.Component {
 					<OpponentHand value={this.props.value.hand} />
 				</Grid>
 				<Grid item xs={2}>
-					<img style = {styles.img} src = {process.env.PUBLIC_URL+"/images/cards.png"} />
+					<img style = {styles.img} src = {process.env.PUBLIC_URL+"/images/cards.png"} alt="cards"/>
 				</Grid>
 				<Grid item xs={9}>
 					<Board value={this.props.value.board} pos="opponentboard" setSelectedAttacked = {this.props.setSelectedAttacked} />

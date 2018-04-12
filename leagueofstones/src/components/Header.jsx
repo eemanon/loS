@@ -19,6 +19,8 @@ import MenuAccount from './menus/MenuAccount.jsx';
 import TextField from 'material-ui/TextField';
 import { connect } from 'react-redux';
 import {withRouter} from 'react-router';
+import axios from 'axios';
+
 
 import Dialog, {
   DialogActions,
@@ -53,7 +55,7 @@ class Header extends React.Component {
 		user: '',
 		email: '',
 		openDialog: false,
-		password: ''
+		password: '',
 	};
 	
   constructor(props) {
@@ -61,8 +63,10 @@ class Header extends React.Component {
   }
   componentDidMount(){
 	  //check if there is local storage data 
-	  console.log("header was just mounted!")
+	  console.log("[header]\theader was just mounted!")
 	  if(localStorage.getItem('user') != null){
+			console.log("[header]\tuser retrieved, setting store")
+			console.log("[header]\ttoken: "+localStorage.getItem('token'))
 		  	this.props.dispatch({ type: 'CONNECT' });
 			this.props.dispatch({ type: 'SETUSER', value: localStorage.getItem('user')});
 			this.props.dispatch({ type: 'SETTOKEN', value: localStorage.getItem('token')});
@@ -87,16 +91,16 @@ class Header extends React.Component {
 	  }
   }
   componentDidUpdate(){	  
-	console.log("update!")
+	console.log("[header]	update")
 	if(this.props.connected && !this.state.connected){
-		console.log("omg it's connected!")
+		console.log("[header]	connecting user")
 		this.setState({connected: true});
 		this.setState({user: this.props.user});
 		this.setState({email: this.props.email});
 	}
   }
   openDialogdeleteAccount = () => {
-	  console.log("dialog!")
+	  console.log("[header] Delete Dialog opened")
 	this.setState({ openDialog: true });
   }
   handleChange = prop => event => {
@@ -105,12 +109,14 @@ class Header extends React.Component {
   
   deleteAccount = () => {
 	  console.log("deleting your account...")
+	  console.log("mail: "+this.props.email)
 	  let url = path+'/users/unsubscribe?email='+this.props.email+'&password='+this.state.password;
 	  console.log(url);
-	  fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-		.then(function(resp){return resp.json()})
-		.then(function(data) {
-			console.log(data);
+	  axios.get(url, {params:{
+			token: this.props.token
+		}})
+			.then(res => {
+			let data = res.data
 			if(data.status==="ok"){
 				console.log("positive response...");
 				this.props.dispatch({ type: 'DISCONNECT' });
@@ -118,37 +124,33 @@ class Header extends React.Component {
 				this.handleRequestCloseDialog();
 				this.setState({connected: false});
 				alert("Ton compte a été supprimé. Adieu! :'(")
+				localStorage.clear();
 			} else {
 				alert ("action failed. "+data.message);
 				this.handleRequestCloseDialog();
 			}
-	}.bind(this))
-	.catch(function(error) {
-		console.log(error);
-	}); 
+		});
+  }
+  tryLogout(){
+	console.log("[Header]\tlogging out...");
+	let url = path+'/users/disconnect';
+	axios.get(url, {params:{
+			token: this.props.token
+		}})
+		.then(res => {
+		let data = res.data	
+		if(data.status==="ok"){
+			console.log("positive response...");
+			this.props.dispatch({ type: 'DISCONNECT' });
+			this.props.dispatch({ type: 'SETUSERINACTIVE' });
+			console.log("setting user inactive"+this.props.useractive);
+			localStorage.clear();
+			this.props.history.push(process.env.PUBLIC_URL+'/');   
+			this.setState({connected: false})
+		}	
+	});
   }
   
-  tryLogout(){
-	console.log("logging out...");
-	let url = path+'/users/disconnect';
-	fetch(url, {credentials: 'include', method: 'get', accept: 'application/json'})
-		.then(function(resp){return resp.json()})
-		.then(function(data) {
-			console.log(data);
-			if(data.status==="ok"){
-				console.log("positive response...");
-				this.props.dispatch({ type: 'DISCONNECT' });
-				this.props.dispatch({ type: 'SETUSERINACTIVE' });
-				console.log("setting user inactive"+this.props.useractive);
-				localStorage.clear();
-				this.props.history.push(process.env.PUBLIC_URL+'/');   
-				this.setState({connected: false})
-			}
-	}.bind(this))
-	.catch(function(error) {
-		console.log(error);
-	}); 
-  }
   handleRequestCloseDialog = () => {
     this.setState({ openDialog: false });
   };
@@ -210,6 +212,7 @@ function mapStateToProps(state) {
     user: state.user,
 	connected: state.connected,
 	email: state.email,
+	token: state.token
   };
 }
 

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "classnames": "^2.2.5",
     "material-ui": "^1.0.0-beta.40",
     "material-ui-icons": "^1.0.0-beta.36",
@@ -13,7 +14,7 @@
     "react-scripts": "1.1.1",
     "redux": "^3.7.2"
   },
-  "homepage" : "http://mass-cara2.univ-tlse2.fr/~sebastian-andreas.si/l3",
+  "homepage": "http://mass-cara2.univ-tlse2.fr/~sebastian-andreas.si/l3",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
